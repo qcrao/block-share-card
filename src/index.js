@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Menu, MenuItem } from "@blueprintjs/core";
+import { IconSize } from "@blueprintjs/icons";
 
 console.log("block share card loading");
 
@@ -13,19 +14,18 @@ function blockShareCardComponent() {
     {},
     React.createElement(
       MenuItem,
-      { text: "Submenu", icon: "document" },
+      { text: "", icon: "send-to" },
       React.createElement(
         Menu,
         {},
         React.createElement(MenuItem, {
-          text: "Child one",
-          icon: "new-text-box",
+          text: "",
+          icon: "mobile-phone",
         }),
         React.createElement(MenuItem, {
-          text: "Child two",
-          icon: "new-object",
-        }),
-        React.createElement(MenuItem, { text: "Child three", icon: "new-link" })
+          text: "",
+          icon: "desktop",
+        })
       )
     )
   );
