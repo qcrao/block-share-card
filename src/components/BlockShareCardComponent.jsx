@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Menu, MenuItem, Popover } from "@blueprintjs/core";
-import { shareAndDownloadImage } from "./download.js";
+import { shareAndDownloadImage } from "../download.js";
 
 function BlockShareCardComponent() {
   const handleClick = (item) => {

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Menu, MenuItem } from "@blueprintjs/core";
 import { IconSize } from "@blueprintjs/icons";
-import BlockShareCardComponent from "./BlockShareCardComponent";
+import BlockShareCardComponent from "./components/BlockShareCardComponent";
 
 console.log("block share card loading");
 
