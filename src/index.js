@@ -8,32 +8,6 @@ console.log("block share card loading");
 
 const rootId = "share-card-root"; // 使用一致的根元素ID
 
-function blockShareCardComponent() {
-  // 使用 React.createElement 构建嵌套菜单结构
-  const menuStructure = React.createElement(
-    Menu,
-    {},
-    React.createElement(
-      MenuItem,
-      { text: "", icon: "send-to" },
-      React.createElement(
-        Menu,
-        {},
-        React.createElement(MenuItem, {
-          text: "",
-          icon: "mobile-phone",
-        }),
-        React.createElement(MenuItem, {
-          text: "",
-          icon: "desktop",
-        })
-      )
-    )
-  );
-
-  return menuStructure;
-}
-
 function onload() {
   const container = document.getElementsByClassName("rm-topbar")[0];
   const blockShareCardContainer = document.createElement("span");

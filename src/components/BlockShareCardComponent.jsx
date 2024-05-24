@@ -12,19 +12,19 @@ function BlockShareCardComponent() {
       <MenuItem
         icon="mobile-phone"
         text="mobile"
-        onClick={() => shareAndDownloadImage()}
+        onClick={() => shareAndDownloadImage(true)}
       />
       <MenuItem
         icon="desktop"
         text="desktop"
-        onClick={() => handleClick("desktop")}
+        onClick={() => shareAndDownloadImage(false)}
       />
     </Menu>
   );
 
   return (
     <Popover content={menu} placement="bottom">
-      <Button icon="send-to" text="" />
+      <Button className="bp3-button bp3-minimal" icon="send-to" text="" />
     </Popover>
   );
 }

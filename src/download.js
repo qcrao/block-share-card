@@ -24,15 +24,15 @@ export function renderHeader(memo) {
   );
 }
 
-export async function shareImage(memo) {
+export async function shareImage(memo, isMobile) {
   const node = document.querySelector(".share-memex-container");
   const originalStyles = node.style.cssText; // 保存原始样式
-  // node.style.width = '320px'
-  node.style.setProperty("width", "320px", "important");
-  // node.style.setProperty('height', '100px', 'important')
 
-  // 延迟以确保样式应用和元素重绘
-  // await new Promise((resolve) => setTimeout(resolve, 1500))
+  if (isMobile) {
+    node.style.setProperty("width", "320px", "important");
+  } else {
+    node.style.setProperty("width", "640px", "important");
+  }
 
   // 生成图片
   const canvas = await html2canvas(node, {
@@ -52,64 +52,63 @@ export async function shareImage(memo) {
   reset();
   return imageSrc;
 }
-export async function shareAndDownloadImage() {
-    console.log("🎨 shareAndDownloadImage(=====>)");
-    const existing = document.getElementById("share-card");
-    if (!existing) {
-        const element = document.createElement("div");
-        element.id = "share-card";
-        document.querySelector(".bp3-portal").appendChild(element);
-    }
+export async function shareAndDownloadImage(isMobile = false) {
+  const existing = document.getElementById("share-card");
+  if (!existing) {
+    const element = document.createElement("div");
+    element.id = "share-card";
+    document.querySelector(".bp3-portal").appendChild(element);
+  }
 
-    const min_date = await roamAlphaAPI.q(queryMinDate);
-    const usageDays = daysBetween(new Date(), new Date(min_date));
-    const blocksNum = await roamAlphaAPI.q(queryNonCodeBlocks);
+  const min_date = await roamAlphaAPI.q(queryMinDate);
+  const usageDays = daysBetween(new Date(), new Date(min_date));
+  const blocksNum = await roamAlphaAPI.q(queryNonCodeBlocks);
 
-    const currentZoomContainer = document.querySelector(
-        '[style="margin-left: -20px;"]'
+  const currentZoomContainer = document.querySelector(
+    '[style="margin-left: -20px;"]'
+  );
+  const currentHighlightBlock = document.querySelector(
+    ".roam-toolkit-block-mode--highlight"
+  );
+
+  // block-highlight-blue rm-block__self rm-block__input
+  if (currentZoomContainer || currentHighlightBlock) {
+    const blockContainer = currentZoomContainer
+      ? currentZoomContainer
+      : currentHighlightBlock.parentElement?.parentElement;
+
+    blockContainer.classList.add("share-memex-container");
+
+    const header = document.createElement("div");
+    header.id = "share-card-header";
+    blockContainer.prepend(header);
+
+    // 创建双横线元素
+    const doubleLine = document.createElement("div");
+    doubleLine.className = "double-line";
+    header.after(doubleLine);
+
+    const footer = document.createElement("div");
+    footer.id = "share-card-footer";
+    blockContainer.appendChild(footer);
+
+    const activeBlock = queryCurrentActiveBlockUID(
+      currentZoomContainer
+        ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
+        : currentHighlightBlock,
+      blockContainer
     );
-    const currentHighlightBlock = document.querySelector(
-        ".roam-toolkit-block-mode--highlight"
-    );
+    const blockInfo = await getBlockInfoByUID(activeBlock.uid);
+    console.log("blockInfo", activeBlock, blockInfo);
 
-    // block-highlight-blue rm-block__self rm-block__input
-    if (currentZoomContainer || currentHighlightBlock) {
-        const blockContainer = currentZoomContainer
-            ? currentZoomContainer
-            : currentHighlightBlock.parentElement?.parentElement;
+    const memo = { ...activeBlock, ...blockInfo };
 
-        blockContainer.classList.add("share-memex-container");
+    renderHeader(memo);
+    renderFooter(blocksNum, usageDays, memo);
 
-        const header = document.createElement("div");
-        header.id = "share-card-header";
-        blockContainer.prepend(header);
-
-        // 创建双横线元素
-        const doubleLine = document.createElement("div");
-        doubleLine.className = "double-line";
-        header.after(doubleLine);
-
-        const footer = document.createElement("div");
-        footer.id = "share-card-footer";
-        blockContainer.appendChild(footer);
-
-        const activeBlock = queryCurrentActiveBlockUID(
-            currentZoomContainer
-                ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
-                : currentHighlightBlock,
-            blockContainer
-        );
-        const blockInfo = await getBlockInfoByUID(activeBlock.uid);
-        console.log("blockInfo", activeBlock, blockInfo);
-
-        const memo = { ...activeBlock, ...blockInfo };
-
-        renderHeader(memo);
-        renderFooter(blocksNum, usageDays, memo);
-
-        const imageSrc = await shareImage(memo);
-        // TODO: initMenuOption()
-    } else {
-        alert("🎨 Please Zoom into(CMD+.) the block you want to share...");
-    }
+    const imageSrc = await shareImage(memo, isMobile);
+    // TODO: initMenuOption()
+  } else {
+    alert("🎨 Please Zoom into(CMD+.) the block you want to share...");
+  }
 }
