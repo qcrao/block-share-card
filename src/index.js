@@ -11,7 +11,7 @@ const rootId = "share-card-root"; // 使用一致的根元素ID
 
 function onload() {
   const container = document.getElementsByClassName("rm-topbar")[0];
-  const blockShareCardContainer = document.createElement("span");
+  const blockShareCardContainer = document.createElement("div");
 
   blockShareCardContainer.id = rootId; // 正确设置 ID
   container.appendChild(blockShareCardContainer); // 正确地添加元素到 DOM
