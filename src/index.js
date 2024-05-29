@@ -14,10 +14,9 @@ function onload() {
   const blockShareCardContainer = document.createElement("div");
 
   blockShareCardContainer.id = rootId; // 正确设置 ID
-  container.appendChild(blockShareCardContainer); // 正确地添加元素到 DOM
-
   ReactDOM.render(<BlockShareCardComponent />, blockShareCardContainer);
 
+  container.appendChild(blockShareCardContainer); // 正确地添加元素到 DOM
   console.log("Loaded block share card container");
 }
 
