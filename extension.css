@@ -125,7 +125,7 @@ div.content strong {
 }
 
 #share-card-header .memo .time::before {
-  bottom: 10px; /* 稍微向上偏移 */
+  bottom: 7px; /* 稍微向上偏移 */
   border-bottom: 2px solid black; /* 更粗的线 */
   left: 5%;
   right: 5%;
