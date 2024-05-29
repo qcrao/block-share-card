@@ -109,6 +109,6 @@ export async function shareAndDownloadImage(isMobile = false) {
     const imageSrc = await shareImage(memo, isMobile);
     // TODO: initMenuOption()
   } else {
-    alert("🎨 Please Zoom into(CMD+.) the block you want to share...");
+    alert("😜 Please zoom into(CMD+.) the block you want to share!");
   }
 }
