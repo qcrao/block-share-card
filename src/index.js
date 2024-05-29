@@ -10,13 +10,14 @@ console.log("block share card loading");
 const rootId = "share-card-root"; // 使用一致的根元素ID
 
 function onload() {
-  const container = document.getElementsByClassName("rm-topbar")[0];
   const blockShareCardContainer = document.createElement("div");
-
   blockShareCardContainer.id = rootId; // 正确设置 ID
   ReactDOM.render(<BlockShareCardComponent />, blockShareCardContainer);
+  
+  const container = document.getElementsByClassName("rm-topbar")[0];
+  const searchDiv = document.getElementsByClassName("rm-find-or-create-wrapper")[0];
+  container.insertBefore(blockShareCardContainer, searchDiv.nextSibling);
 
-  container.appendChild(blockShareCardContainer); // 正确地添加元素到 DOM
   console.log("Loaded block share card container");
 }
 
