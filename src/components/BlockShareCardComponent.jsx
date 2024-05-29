@@ -33,11 +33,12 @@ function BlockShareCardComponent() {
     <Popover
       content={menu}
       isOpen={isOpen}
-      onInteraction={(state) => setIsOpen(state)}>
+      onInteraction={(state) => setIsOpen(state)}
+    >
       <span>
         <Tooltip content="Share block card" placement="bottom">
           <Button
-            className="bp3-button bp3-minimal"
+            className="bp3-button bp3-minimal bp3-small"
             icon="send-to"
             text=""
             onClick={togglePopover}
