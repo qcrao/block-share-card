@@ -75,6 +75,15 @@ export async function shareImage(memo, isMobile) {
   reset();
   return imageSrc;
 }
+
+function reset() {
+  document.querySelector("#share-card-header").remove();
+  document.querySelector("#share-card-footer").remove();
+  document
+    .querySelector(".share-memex-container")
+    .classList.remove("share-memex-container");
+}
+
 export async function shareAndDownloadImage(isMobile = false) {
   const existing = document.getElementById("share-card");
   if (!existing) {
@@ -130,7 +139,6 @@ export async function shareAndDownloadImage(isMobile = false) {
     renderFooter(blocksNum, usageDays, memo);
 
     const imageSrc = await shareImage(memo, isMobile);
-    // TODO: initMenuOption()
   } else {
     alert("😜 Please zoom into(CMD+.) the block you want to share!");
   }
