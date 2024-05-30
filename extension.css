@@ -9,7 +9,7 @@
 
 .share-memex-container .rm-block-main,
 .share-memex-container .rm-block-children {
-  margin-right: 20px;
+  margin-right: 5px;
 }
 
 .share-memex-container .rm-block-main .rm-block-separator,
@@ -50,16 +50,12 @@ div.content strong {
   font-weight: 9000;
 }
 
-.share-memex-container #share-card-header .memo {
-  padding-top: 30px;
-}
-
 .share-memex-container #share-card-header .content {
   display: none;
 }
 
 #share-card-header .memo {
-  padding: 0 20px 5px;
+  padding: 10px 20px 5px;
   display: flex;
   /* justify-content: space-between; */
   /* align-items: center; */
@@ -76,7 +72,6 @@ div.content strong {
   display: flex;
   align-items: center;
   justify-content: left;
-  margin-left: 5px;
   margin-bottom: 5px;
 }
 
@@ -85,18 +80,19 @@ div.content strong {
 }
 
 #share-card-header .memo .author .username {
+  font-size: 14px;
   font-weight: bold;
 }
 
 /* 优化导出样式 */
 #share-card-header .memo .time {
   width: 100%;
+  font-size: 14px;
   flex-grow: 1;
-  margin-bottom: 5px;
   /* text-align: right; */
 
-  margin-left: 5px;
   text-align: left;
+  margin-bottom: 5px;
 }
 
 #share-card-header .memo ::after,
@@ -154,6 +150,6 @@ div.content strong {
 #share-card-footer .footer .via {
   padding-top: 5px;
   font-size: 14px;
-  color: #9d9d9d;
+  color: #9d9d9d7d;
   font-weight: bold;
 }
