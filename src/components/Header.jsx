@@ -3,7 +3,7 @@ export function Header({ block }) {
     <div className="memo">
       <div className="author">
         <span className="at">@</span>
-        <span className="username">码农桃花源</span>
+        <span className="username">{block.username}</span>
       </div>
 
       <div className="time">
