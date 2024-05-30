@@ -32,6 +32,29 @@ export async function shareImage(memo, isMobile) {
     node.style.setProperty("width", "320px", "important");
   } else {
     node.style.setProperty("width", "640px", "important");
+
+    // 在 #share-card-header .memo 增加 CSS
+    let headerMemo = node.querySelector("#share-card-header .memo");
+    if (headerMemo) {
+      headerMemo.style.justifyContent = "space-between";
+      headerMemo.style.alignItems = "center";
+      headerMemo.style.flexDirection = "initial";
+    }
+
+    // 在 #share-card-footer .footer 增加 CSS
+    let footerElement = node.querySelector("#share-card-footer .footer");
+    if (footerElement) {
+      footerElement.style.justifyContent = "space-between";
+      footerElement.style.alignItems = "center";
+      footerElement.style.flexDirection = "initial";
+      footerElement.style.padding = "0 20px 10px";
+    }
+
+    // 在 #share-card-header .memo .time 增加 CSS
+    let timeElement = node.querySelector("#share-card-header .memo .time");
+    if (timeElement) {
+      timeElement.style.textAlign = "right";
+    }
   }
 
   // 生成图片

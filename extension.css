@@ -75,10 +75,6 @@ div.content strong {
   margin-bottom: 5px;
 }
 
-#share-card-header .memo .author .at {
-  /* margin-left: 4px; */
-}
-
 #share-card-header .memo .author .username {
   font-size: 14px;
   font-weight: bold;
@@ -150,6 +146,6 @@ div.content strong {
 #share-card-footer .footer .via {
   padding-top: 5px;
   font-size: 14px;
-  color: #9d9d9d7d;
+  color: #9d9d9d;
   font-weight: bold;
 }
