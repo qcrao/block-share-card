@@ -145,14 +145,14 @@ div.content strong {
 #share-card-header .memo ::before {
   bottom: 7px; /* 稍微向上偏移 */
   border-bottom: 2px solid black; /* 更粗的线 */
-  left: 5%;
-  right: 5%;
+  left: 3%;
+  right: 3%;
 }
 
 #share-card-header .memo ::after {
   bottom: 0; /* 紧贴底部 */
   border-bottom: 1px solid black; /* 更细的线 */
   margin-bottom: 3px;
-  left: 5%;
-  right: 5%;
+  left: 3%;
+  right: 3%;
 }
