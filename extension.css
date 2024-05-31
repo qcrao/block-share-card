@@ -75,9 +75,18 @@ div.content strong {
   margin-bottom: 5px;
 }
 
+#share-card-header .memo .author .at {
+  font-size: 14px;
+  font-weight: bold;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 #share-card-header .memo .author .username {
   font-size: 14px;
   font-weight: bold;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* 优化导出样式 */

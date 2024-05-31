@@ -12,7 +12,8 @@ export function renderFooter(blocksNum, usageDays, memo) {
     html`<${Footer}
       blocksNum=${blocksNum}
       usageDays=${usageDays}
-      block=${memo} />`,
+      block=${memo}
+    />`,
     document.getElementById("share-card-footer")
   );
 }

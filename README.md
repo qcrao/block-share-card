@@ -34,6 +34,12 @@ Once the extension is installed, you'll find a new sharing icon in the Roam Rese
 3. Select "Mobile" or "Desktop" based on your preference for the image format.
 4. After selection, the image will be automatically downloaded to a specified folder, allowing you to easily access and share it across platforms.
 
+| Step                   | Action                   |
+|--------------------------------|-------------------------------|
+|1|![](./assets/step1.jpeg)|
+|2|![](./assets/step2.jpeg)|
+|3|![](./assets/step3.jpeg)|
+
 ## Support
 
 For support or to report issues, please visit the [GitHub repository](https://github.com/qcrao/block-share-card) for this extension.
