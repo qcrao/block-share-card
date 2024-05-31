@@ -1,10 +1,15 @@
+:root {
+  --share-bloack-card-font-family-base: "LXGW WenKai", -apple-system,
+    "Microsoft YaHei", "SimSun", sans-serif;
+}
+
 .share-memex-container {
   min-width: 320px;
   font-size: 14px;
 }
 
 .share-memex-container span {
-  font-family: "LXGW WenKai", -apple-system !important;
+  font-family: var(--share-bloack-card-font-family-base);
 }
 
 .share-memex-container .rm-block-main,
@@ -77,6 +82,7 @@ div.content strong {
 
 #share-card-header .memo .author .at {
   font-size: 14px;
+  font-family: var(--share-bloack-card-font-family-base);
   font-weight: bold;
   display: inline-block;
   vertical-align: middle;
@@ -84,6 +90,7 @@ div.content strong {
 
 #share-card-header .memo .author .username {
   font-size: 14px;
+  font-family: var(--share-bloack-card-font-family-base);
   font-weight: bold;
   display: inline-block;
   vertical-align: middle;
@@ -92,6 +99,7 @@ div.content strong {
 /* 优化导出样式 */
 #share-card-header .memo .time {
   width: 100%;
+  font-family: var(--share-bloack-card-font-family-base);
   font-size: 14px;
   flex-grow: 1;
   /* text-align: right; */
