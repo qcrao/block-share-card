@@ -69,7 +69,7 @@ export async function shareImage(memo, isMobile) {
   const imageSrc = canvas.toDataURL("image/png", 1);
 
   // replaceAsImage(imageSrc);
-  downloadImage(imageSrc, memo);
+  downloadImage(imageSrc, memo, isMobile);
   // reset header and footer
   node.style.cssText = originalStyles;
   reset();

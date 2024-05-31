@@ -149,3 +149,7 @@ div.content strong {
   color: #9d9d9d;
   font-weight: bold;
 }
+
+:focus {
+  outline: none !important;
+}
