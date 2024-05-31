@@ -48,6 +48,12 @@ For support or to report issues, please visit the [GitHub repository](https://gi
 
 Contributions are welcome! If you'd like to contribute, please fork the repository and submit a pull request.
 
+## Acknowledgements
+
+This project, Block Share Card, builds upon the foundational work done in the [Styled Roam](https://github.com/JimmyLv/styled-roam) project by [Jimmy Lv](https://github.com/JimmyLv). 
+
+I am grateful for the initial concepts and code provided by Styled Roam, which have significantly influenced the development of this extension. Special thanks to Jimmy Lv and all contributors to the Styled Roam project for their pioneering efforts in enhancing the Roam Research user experience.
+
 ## License
 
 This extension is released under the MIT License. Please see the LICENSE file in the repository for more details.
