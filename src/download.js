@@ -79,15 +79,21 @@ export async function shareImage(memo, isMobile, extensionAPI) {
       "--share-bloack-card-font-family-base",
       '"LXGW WenKai", -apple-system, "Microsoft YaHei", "SimSun", sans-serif'
     );
+  } else {
+    // 设置其他字体样式或恢复默认样式
+    document.documentElement.style.setProperty(
+      "--share-bloack-card-font-family-base",
+      "inherit"
+    );
   }
 
-  const IfShowBlockAndDays = await extensionAPI.settings.get(
-    "show-blocks-info-setting"
+  const disableShowBlockAndDays = await extensionAPI.settings.get(
+    "disable-blocks-info-setting"
   );
   const footerStatElement = document.querySelector(
     "#share-card-footer .footer .stat"
   );
-  if (!IfShowBlockAndDays && footerStatElement) {
+  if (disableShowBlockAndDays && footerStatElement) {
     footerStatElement.style.display = "none";
   }
 

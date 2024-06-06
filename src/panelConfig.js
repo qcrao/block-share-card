@@ -9,20 +9,18 @@ export function initPanelConfig(extensionAPI) {
           type: "select",
           items: ["Default", "Vanilla Roam"],
           onChange: async (evt) => {
-            console.log("Select Changed!", evt);
             await extensionAPI.settings.set("card-style", evt);
           },
         },
       },
       {
-        id: "show-blocks-info-setting",
-        name: "Show Blocks And Days",
+        id: "disable-blocks-info-setting",
+        name: "Disable Blocks And Days",
         action: {
           type: "switch",
           onChange: async (evt) => {
-            console.log("Switch!", evt.target.checked);
             await extensionAPI.settings.set(
-              "show-blocks-info-setting",
+              "disable-blocks-info-setting",
               evt.target.checked
             );
           },
