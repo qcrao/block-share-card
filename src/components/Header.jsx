@@ -16,14 +16,6 @@ export function Header({ block }) {
           hour12: true,
         })}
       </div>
-
-      <div className="content">
-        <p>{block.string}</p>
-        <p />
-        <p>
-          <span className="tag">{"#" + block.tags.join("# ")}</span>
-        </p>
-      </div>
     </div>
   );
 }

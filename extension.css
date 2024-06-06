@@ -55,10 +55,6 @@ div.content strong {
   font-weight: 9000;
 }
 
-.share-memex-container #share-card-header .content {
-  display: none;
-}
-
 #share-card-header .memo {
   padding: 10px 20px 5px;
   display: flex;
