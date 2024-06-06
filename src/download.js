@@ -30,6 +30,14 @@ export async function shareImage(memo, isMobile) {
 
   if (isMobile) {
     node.style.setProperty("width", "320px", "important");
+
+    // 修改 #share-card-header .memo .author 的宽度为 100%
+    const authorElement = node.querySelector(
+      "#share-card-header .memo .author"
+    );
+    if (authorElement) {
+      authorElement.style.setProperty("width", "100%", "important");
+    }
   } else {
     node.style.setProperty("width", "640px", "important");
 
@@ -70,9 +78,10 @@ export async function shareImage(memo, isMobile) {
 
   // replaceAsImage(imageSrc);
   downloadImage(imageSrc, memo, isMobile);
+
   // reset header and footer
   node.style.cssText = originalStyles;
-  reset();
+  // reset();
   return imageSrc;
 }
 
