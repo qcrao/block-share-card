@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Menu, MenuItem, Popover, Tooltip } from "@blueprintjs/core";
 import { shareAndDownloadImage } from "../download.js";
 
-function BlockShareCardComponent() {
+function BlockShareCardComponent({ extensionAPI }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const togglePopover = () => setIsOpen(!isOpen);
@@ -14,7 +14,7 @@ function BlockShareCardComponent() {
         icon="mobile-phone"
         text="Mobile"
         onClick={() => {
-          shareAndDownloadImage(true);
+          shareAndDownloadImage(true, extensionAPI);
           closePopover();
         }}
       />
@@ -22,7 +22,7 @@ function BlockShareCardComponent() {
         icon="desktop"
         text="Desktop"
         onClick={() => {
-          shareAndDownloadImage(false);
+          shareAndDownloadImage(false, extensionAPI);
           closePopover();
         }}
       />
@@ -33,8 +33,7 @@ function BlockShareCardComponent() {
     <Popover
       content={menu}
       isOpen={isOpen}
-      onInteraction={(state) => setIsOpen(state)}
-    >
+      onInteraction={(state) => setIsOpen(state)}>
       <span>
         <Tooltip content="Share block card" placement="bottom">
           <Button

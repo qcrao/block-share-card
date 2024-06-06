@@ -24,7 +24,7 @@ export function renderHeader(memo) {
   );
 }
 
-export async function shareImage(memo, isMobile) {
+export async function shareImage(memo, isMobile, extensionAPI) {
   const node = document.querySelector(".share-memex-container");
   const originalStyles = node.style.cssText; // 保存原始样式
 
@@ -65,14 +65,34 @@ export async function shareImage(memo, isMobile) {
     }
   }
 
-  // 生成图片
-  const canvas = await html2canvas(node, {
+  const options = {
     logging: false,
     scale: 3,
     useCORS: true,
     letterRendering: true,
-    backgroundColor: "#FEFCF6",
-  });
+  };
+
+  const cardStyle = await extensionAPI.settings.get("card-style");
+  if (cardStyle === "Default") {
+    options.backgroundColor = "#FEFCF6";
+    document.documentElement.style.setProperty(
+      "--share-bloack-card-font-family-base",
+      '"LXGW WenKai", -apple-system, "Microsoft YaHei", "SimSun", sans-serif'
+    );
+  }
+
+  const IfShowBlockAndDays = await extensionAPI.settings.get(
+    "show-blocks-info-setting"
+  );
+  const footerStatElement = document.querySelector(
+    "#share-card-footer .footer .stat"
+  );
+  if (!IfShowBlockAndDays && footerStatElement) {
+    footerStatElement.style.display = "none";
+  }
+
+  // 生成图片
+  const canvas = await html2canvas(node, options);
 
   const imageSrc = canvas.toDataURL("image/png", 1);
 
@@ -81,7 +101,7 @@ export async function shareImage(memo, isMobile) {
 
   // reset header and footer
   node.style.cssText = originalStyles;
-  // reset();
+  reset();
   return imageSrc;
 }
 
@@ -93,7 +113,7 @@ function reset() {
     .classList.remove("share-memex-container");
 }
 
-export async function shareAndDownloadImage(isMobile = false) {
+export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
   const existing = document.getElementById("share-card");
   if (!existing) {
     const element = document.createElement("div");
@@ -147,7 +167,7 @@ export async function shareAndDownloadImage(isMobile = false) {
     renderHeader(memo);
     renderFooter(blocksNum, usageDays, memo);
 
-    const imageSrc = await shareImage(memo, isMobile);
+    const imageSrc = await shareImage(memo, isMobile, extensionAPI);
   } else {
     alert("😜 Please zoom into(CMD+.) the block you want to share!");
   }
