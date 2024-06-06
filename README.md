@@ -6,11 +6,10 @@ This extension enhances the user experience by simplifying the sharing process a
 
 ## Screenshots
 
-| Desktop View                   | Mobile View                   |
-|--------------------------------|-------------------------------|
-| ![](./assets/qcrao-4uDyOJFsn-desktop.png) | ![](./assets/qcrao-4uDyOJFsn-mobile.png) |
-| ![](./assets/qcrao-UUhfbu5lT-desktop.png) | ![](./assets/qcrao-UUhfbu5lT-mobile.png) |
-
+| Desktop View                                                                                         | Mobile View                                                                                         |
+| ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| ![](https://github.com/qcrao/block-share-card/blob/main/assets/qcrao-4uDyOJFsn-desktop.png?raw=true) | ![](https://github.com/qcrao/block-share-card/blob/main/assets/qcrao-4uDyOJFsn-mobile.png?raw=true) |
+| ![](https://github.com/qcrao/block-share-card/blob/main/assets/qcrao-UUhfbu5lT-desktop.png?raw=true) | ![](https://github.com/qcrao/block-share-card/blob/main/assets/qcrao-UUhfbu5lT-mobile.png?raw=true) |
 
 ## Features
 
@@ -34,11 +33,11 @@ Once the extension is installed, you'll find a new sharing icon in the Roam Rese
 3. Select "Mobile" or "Desktop" based on your preference for the image format.
 4. After selection, the image will be automatically downloaded to a specified folder, allowing you to easily access and share it across platforms.
 
-| Step                   | Action                   |
-|--------------------------------|-------------------------------|
-|1|![](./assets/step1.jpeg)|
-|2|![](./assets/step2.jpeg)|
-|3|![](./assets/step3.jpeg)|
+| Step | Action                                                                              |
+| ---- | ----------------------------------------------------------------------------------- |
+| 1    | ![](https://github.com/qcrao/block-share-card/blob/main/assets/step1.jpeg?raw=true) |
+| 2    | ![](https://github.com/qcrao/block-share-card/blob/main/assets/step2.jpeg?raw=true) |
+| 3    | ![](https://github.com/qcrao/block-share-card/blob/main/assets/step3.jpeg?raw=true) |
 
 ## Support
 
@@ -50,7 +49,7 @@ Contributions are welcome! If you'd like to contribute, please fork the reposito
 
 ## Acknowledgements
 
-This project, Block Share Card, builds upon the foundational work done in the [Styled Roam](https://github.com/JimmyLv/styled-roam) project by [Jimmy Lv](https://github.com/JimmyLv). 
+This project, Block Share Card, builds upon the foundational work done in the [Styled Roam](https://github.com/JimmyLv/styled-roam) project by [Jimmy Lv](https://github.com/JimmyLv).
 
 I am grateful for the initial concepts and code provided by Styled Roam, which have significantly influenced the development of this extension. Special thanks to Jimmy Lv and all contributors to the Styled Roam project for their pioneering efforts in enhancing the Roam Research user experience.
 
