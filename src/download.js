@@ -1,6 +1,6 @@
 import { html } from "htm/react";
 import html2canvas from "html2canvas";
-import { getBlockInfoByUID, queryCurrentActiveBlockUID } from "./api/roamAPI";
+import { queryCurrentActiveBlockUID } from "./api/roamSelect";
 import { queryMinDate, queryNonCodeBlocks } from "./api/roamQueries";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
@@ -27,12 +27,11 @@ export function renderHeader(memo, extensionAPI) {
 
 export async function shareImage(memo, isMobile, extensionAPI) {
   const node = document.querySelector(".share-memex-container");
-  const originalStyles = node.style.cssText; // 保存原始样式
+  const originalStyles = node.style.cssText;
 
   if (isMobile) {
     node.style.setProperty("width", "320px", "important");
 
-    // 修改 #share-card-header .memo .author 的宽度为 100%
     const authorElement = node.querySelector(
       "#share-card-header .memo .author"
     );
@@ -42,7 +41,6 @@ export async function shareImage(memo, isMobile, extensionAPI) {
   } else {
     node.style.setProperty("width", "640px", "important");
 
-    // 在 #share-card-header .memo 增加 CSS
     let headerMemo = node.querySelector("#share-card-header .memo");
     if (headerMemo) {
       headerMemo.style.justifyContent = "space-between";
@@ -50,7 +48,6 @@ export async function shareImage(memo, isMobile, extensionAPI) {
       headerMemo.style.flexDirection = "initial";
     }
 
-    // 在 #share-card-footer .footer 增加 CSS
     let footerElement = node.querySelector("#share-card-footer .footer");
     if (footerElement) {
       footerElement.style.justifyContent = "space-between";
@@ -59,7 +56,6 @@ export async function shareImage(memo, isMobile, extensionAPI) {
       footerElement.style.padding = "0 20px 10px";
     }
 
-    // 在 #share-card-header .memo .time 增加 CSS
     let timeElement = node.querySelector("#share-card-header .memo .time");
     if (timeElement) {
       timeElement.style.textAlign = "right";
@@ -81,7 +77,6 @@ export async function shareImage(memo, isMobile, extensionAPI) {
       '"LXGW WenKai", -apple-system, "Microsoft YaHei", "SimSun", sans-serif'
     );
   } else {
-    // 设置其他字体样式或恢复默认样式
     document.documentElement.style.setProperty(
       "--share-bloack-card-font-family-base",
       "inherit"
@@ -98,12 +93,10 @@ export async function shareImage(memo, isMobile, extensionAPI) {
     footerStatElement.style.display = "none";
   }
 
-  // 生成图片
   const canvas = await html2canvas(node, options);
 
   const imageSrc = canvas.toDataURL("image/png", 1);
 
-  // replaceAsImage(imageSrc);
   downloadImage(imageSrc, memo, isMobile);
 
   // reset header and footer
@@ -151,7 +144,6 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
     header.id = "share-card-header";
     blockContainer.prepend(header);
 
-    // 创建双横线元素
     const doubleLine = document.createElement("div");
     doubleLine.className = "double-line";
     header.after(doubleLine);
@@ -160,18 +152,14 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
     footer.id = "share-card-footer";
     blockContainer.appendChild(footer);
 
-    console.log("currentZoomContainer==>", currentZoomContainer)
-
     const activeBlock = queryCurrentActiveBlockUID(
       currentZoomContainer
         ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
         : currentHighlightBlock,
       blockContainer
     );
-    const blockInfo = await getBlockInfoByUID(activeBlock.uid);
-    console.log("blockInfo", activeBlock, blockInfo);
 
-    const memo = { ...activeBlock, ...blockInfo };
+    const memo = { ...activeBlock };
 
     renderHeader(memo, extensionAPI);
     renderFooter(blocksNum, usageDays, memo);

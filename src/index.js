@@ -8,14 +8,14 @@ import { initPanelConfig } from "./panelConfig.js";
 
 console.log("block share card loading");
 
-const rootId = "share-card-root"; // 使用一致的根元素ID
+const rootId = "share-card-root";
 
 function onload({ extensionAPI, ...rest }) {
   const panelConfig = initPanelConfig(extensionAPI);
   extensionAPI.settings.panel.create(panelConfig);
 
   const blockShareCardContainer = document.createElement("span");
-  blockShareCardContainer.id = rootId; // 正确设置 ID
+  blockShareCardContainer.id = rootId;
   ReactDOM.render(
     <BlockShareCardComponent extensionAPI={extensionAPI} />,
     blockShareCardContainer
@@ -31,7 +31,7 @@ function onload({ extensionAPI, ...rest }) {
 }
 
 function onunload() {
-  const blockShareCardContainer = document.getElementById(rootId); // 确保使用相同的 ID
+  const blockShareCardContainer = document.getElementById(rootId);
 
   ReactDOM.unmountComponentAtNode(blockShareCardContainer);
   blockShareCardContainer.remove();

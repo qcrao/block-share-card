@@ -16,23 +16,3 @@ export const queryCurrentActiveBlockUID = (blockElement, blockContainer) => {
     createTime: parseInt(createTimeStr, 10),
   };
 };
-
-export const getBlockInfoByUID = async (
-  uid,
-  withChildren = false,
-  withParents = false
-) => {
-  try {
-    let q = `[:find ?edit/time ?create/time
-                    :where [?page :block/uid "${uid}"]  ]`;
-
-    var results = await window.roamAlphaAPI.q(q);
-    if (results.length == 0) return null;
-    console.log("results==>", results);
-    console.log("uid==>", uid);
-
-    return results[0][0];
-  } catch (e) {
-    return null;
-  }
-};
