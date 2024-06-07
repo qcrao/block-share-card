@@ -4,7 +4,8 @@ export function initPanelConfig(extensionAPI) {
     settings: [
       {
         id: "card-style",
-        name: "Select card style",
+        name: "Card style",
+        description: "Select the style of the card",
         action: {
           type: "select",
           items: ["Default", "Vanilla Roam"],
@@ -15,7 +16,8 @@ export function initPanelConfig(extensionAPI) {
       },
       {
         id: "disable-blocks-info-setting",
-        name: "Disable Blocks And Days",
+        name: "Hide blocks and days",
+        description: "Hide the number of blocks and days",
         action: {
           type: "switch",
           onChange: async (evt) => {
