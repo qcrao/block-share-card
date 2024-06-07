@@ -12,14 +12,15 @@ export function renderFooter(blocksNum, usageDays, memo) {
     html`<${Footer}
       blocksNum=${blocksNum}
       usageDays=${usageDays}
-      block=${memo} />`,
+      block=${memo}
+    />`,
     document.getElementById("share-card-footer")
   );
 }
 
-export function renderHeader(memo) {
+export function renderHeader(memo, extensionAPI) {
   ReactDOM.render(
-    html`<${Header} block=${memo} />`,
+    html`<${Header} block=${memo} extensionAPI=${extensionAPI} />`,
     document.getElementById("share-card-header")
   );
 }
@@ -159,6 +160,8 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
     footer.id = "share-card-footer";
     blockContainer.appendChild(footer);
 
+    console.log("currentZoomContainer==>", currentZoomContainer)
+
     const activeBlock = queryCurrentActiveBlockUID(
       currentZoomContainer
         ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
@@ -170,7 +173,7 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
 
     const memo = { ...activeBlock, ...blockInfo };
 
-    renderHeader(memo);
+    renderHeader(memo, extensionAPI);
     renderFooter(blocksNum, usageDays, memo);
 
     const imageSrc = await shareImage(memo, isMobile, extensionAPI);

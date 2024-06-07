@@ -1,4 +1,10 @@
-export function Header({ block }) {
+export function Header({ block, extensionAPI }) {
+  let showTime = block.createTime;
+  const ifShowEditTime = extensionAPI.settings.get("create-edit-time");
+  if (ifShowEditTime === "Edit Time") {
+    showTime = block.editTime;
+  }
+
   return (
     <div className="memo">
       <div className="author">
@@ -7,7 +13,7 @@ export function Header({ block }) {
       </div>
 
       <div className="time">
-        {new Date(block.time).toLocaleString("en-US", {
+        {new Date(showTime).toLocaleString("en-US", {
           year: "numeric",
           month: "short",
           day: "2-digit",
