@@ -10,17 +10,14 @@
       content="width=device-width,initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 
     <!-- Primary Meta Tags -->
-    <title>喂猫的朋友们</title>
-    <meta name="title" content="喂猫的朋友们" />
-    <meta
-      name="description"
-      itemprop="description"
-      content="给汤圆可乐买 🥩🍤 罐头吃~" />
+    <title>赞赏</title>
+    <meta name="title" content="赞赏" />
+    <meta name="description" itemprop="description" content="给我买一杯咖啡~" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://miaoyan.app/cats.html" />
-    <meta property="og:title" content="喂猫的朋友们" />
-    <meta property="og:description" content="给汤圆可乐买 🥩🍤 罐头吃~" />
+    <meta property="og:title" content="喜欢 Block Share Card 扩展" />
+    <meta property="og:description" content="给我买一杯咖啡~" />
     <meta
       property="og:image"
       content="https://raw.githubusercontent.com/qcrao/block-share-card/079e1148cd7fb1bc0325443682b8310350a6655b/website/assets/logo.svg" />
@@ -31,7 +28,7 @@
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://block-share-card.qcrao.com" />
     <meta property="twitter:title" content="喜欢 Block Share Card 扩展" />
-    <meta property="twitter:description" content="给汤圆可乐买 🥩🍤 罐头吃~" />
+    <meta property="twitter:description" content="给我买一杯咖啡~" />
     <meta
       property="twitter:image"
       content="https://raw.githubusercontent.com/qcrao/block-share-card/079e1148cd7fb1bc0325443682b8310350a6655b/website/assets/logo.svg" />
@@ -294,15 +291,15 @@
         $html.setAttribute("lang", lang);
         localStorage.setItem("miaoyanLang", lang);
         if (lang === "en") {
-          document.title = "Friends who feed cats";
+          document.title = "Friends who like me";
           document
             .querySelector('meta[name="description"]')
-            .setAttribute("content", "Buy 🥩🍤 cans for TangYuan & Coke.");
+            .setAttribute("content", "Buy me a coffee.");
         } else {
-          document.title = "喂猫的朋友们";
+          document.title = "赞赏";
           document
             .querySelector('meta[name="description"]')
-            .setAttribute("content", "给汤圆可乐买 🥩🍤 罐头吃~");
+            .setAttribute("content", "给我买一杯咖啡~");
         }
       };
       $langSwitch.onclick = () => {
@@ -468,7 +465,40 @@
     const crowd = [];
 
     function init() {
-      createPeeps();
+      // read --data-friends from the css
+      // 获取根元素（:root）的计算样式
+      const rootStyle = getComputedStyle(document.documentElement);
+
+      // 读取 --data-friend 属性的值
+      const dataFriend = rootStyle.getPropertyValue("--data-friend");
+
+      // 去除属性值中的引号
+      const friendList = dataFriend.replace(/"/g, "");
+
+      // 将朋友列表转换为数组
+      const friends = friendList.split("、");
+
+      // 获取朋友数量
+      const friendCount = friends.length;
+
+      // 修改 CSS 的 content 属性
+      const cssRules = `
+        .i18n-miao-people-desc:before {
+          content: "数据每周手动更新，当前 ${friendCount} 位朋友打赏了我";
+        }
+        [lang="en"] .i18n-miao-people-desc:before {
+          content: "Weekly manual update, ${friendCount} friends like me";
+        }
+      `;
+
+      // 创建 style 元素
+      const styleElement = document.createElement("style");
+      styleElement.innerHTML = cssRules;
+
+      // 将 style 元素添加到 head 中
+      document.head.appendChild(styleElement);
+
+      createPeeps(friendCount);
 
       // resize also (re)populates the stage
       resize();
@@ -477,14 +507,14 @@
       window.addEventListener("resize", resize);
     }
 
-    function createPeeps() {
+    function createPeeps(friendCount) {
       const { rows, cols } = config;
       const { naturalWidth: width, naturalHeight: height } = img;
       const total = rows * cols;
       const rectWidth = width / rows;
       const rectHeight = height / cols;
 
-      for (let i = 0; i < total; i++) {
+      for (let i = 0; i < friendCount; i++) {
         allPeeps.push(
           new Peep({
             image: img,

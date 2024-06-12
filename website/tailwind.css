@@ -6,12 +6,12 @@
   --data-friend: "WillMc93、praetor29";
 }
 
-.i18n-miao-people-desc:before {
-  content: "数据每周手动更新，当前 2 位朋友喜欢汤圆可乐";
+/* .i18n-miao-people-desc:before {
+  content: "数据每周手动更新，当前 2 位朋友打赏了我";
 }
 [lang="en"] .i18n-miao-people-desc:before {
-  content: "Weekly manual update, 2 friends like TangYuan and Coke";
-}
+  content: "Weekly manual update, 2 friends like me";
+} */
 
 body {
   font-family: "LXGW WenKai Lite", sans-serif;
