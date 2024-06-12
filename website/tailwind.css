@@ -1,20 +1,20 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 :root {
-  --data-friend: '木子君、Jerk、芸璟、薛定谔的盲盒、沙溪、忸祁、*锐、木呀、π~mong、Hsin、Kake、喜多🍒、**飞、陆蔚青 sluke、红色的弓箭手、Catch、子岚、Linmi、小小小小小国、zhyncs、YuYuMi、匿名妙友、**辉、Robin、孑虚乌有、嗨嗨皮、熏锅锅、**泰、EugEnE 六金、Chen Chen、走鹃、飞🇨🇳🇨🇳、刘奇、**雄、邓旭东、**主、**得、*过、Wayne、再见孙悟空、牧野 Peikon、Grug、**文、奥特饭、LXC、瓮 J、董超、永遇乐、匿名妙友、Koobal、simonkuang、大团🐱、xiang、凨、Jimmy、互花米草、嘟嘟噜、晶晶、CLICK、折宝亭、*懂、*双、*泰、January、**招、Kamus、MING、WZ、夏清昕_Nicole、Rio :)、星星、Kieda、我们的曾经、*钦、我们的曾经、匿名妙友、Devqiu599、**梅、匿名妙友、坐和坐宽、匿名妙友、pan、明明会多努力学习、匿名妙友、Zan_Minkian、匿名妙友、李騁昊、西苑前、depthsy、Frank、Arthur、匿名妙友、Uwant、我L.N、Yorks0n、匿名妙友、曉傑同學、MartinKuo-XY、Pake很好用、刘青林、刘志龙、Images、毛毛、Remember、Feng、Edward、**书、Devqiu599、Shawn Harmsen、xxholly32、晚天、**谷、*祥、南京雨花吴彦祖、屠夫哥哥、Cheers、Cindy、严济之、落叶挽歌、xxholly32、匿名妙友、LL、美式咖啡、yancey、阿栋 Adonis、**渝、*鑫、**玲、**飞、**伦、darklinden、夏永锋、匿名妙友、Burn、XX、hpc4you阿斌、Reda、Joe-董健、HatMatrix、*洋、匿名妙友、世界线收束、一身都是月、匿名妙友、lx、匿名妙友、davywalker、匿名妙友、赵环宇 Henry、HE、tzxdtc、xxholly32、LittleWang6770、rexarski、shawnharmsen、**财';
+  --data-friend: "木子君、Jerk、芸璟、薛定谔的盲盒、沙溪、忸祁、*锐、木呀、π~mong、Hsin、Kake、喜多🍒、**飞、陆蔚青 sluke、红色的弓箭手、Catch、子岚、Linmi、小小小小小国、zhyncs、YuYuMi、匿名妙友、**辉、Robin、孑虚乌有、嗨嗨皮、熏锅锅、**泰、EugEnE 六金、Chen Chen、走鹃、飞🇨🇳🇨🇳、刘奇、**雄、邓旭东、**主、**得、*过、Wayne、再见孙悟空、牧野 Peikon、Grug、**文、奥特饭、LXC、瓮 J、董超、永遇乐、匿名妙友、Koobal、simonkuang、大团🐱、xiang、凨、Jimmy、互花米草、嘟嘟噜、晶晶、CLICK、折宝亭、*懂、*双、*泰、January、**招、Kamus、MING、WZ、夏清昕_Nicole、Rio :)、星星、Kieda、我们的曾经、*钦、我们的曾经、匿名妙友、Devqiu599、**梅、匿名妙友、坐和坐宽、匿名妙友、pan、明明会多努力学习、匿名妙友、Zan_Minkian、匿名妙友、李騁昊、西苑前、depthsy、Frank、Arthur、匿名妙友、Uwant、我L.N、Yorks0n、匿名妙友、曉傑同學、MartinKuo-XY、Pake很好用、刘青林、刘志龙、Images、毛毛、Remember、Feng、Edward、**书、Devqiu599、Shawn Harmsen、xxholly32、晚天、**谷、*祥、南京雨花吴彦祖、屠夫哥哥、Cheers、Cindy、严济之、落叶挽歌、xxholly32、匿名妙友、LL、美式咖啡、yancey、阿栋 Adonis、**渝、*鑫、**玲、**飞、**伦、darklinden、夏永锋、匿名妙友、Burn、XX、hpc4you阿斌、Reda、Joe-董健、HatMatrix、*洋、匿名妙友、世界线收束、一身都是月、匿名妙友、lx、匿名妙友、davywalker、匿名妙友、赵环宇 Henry、HE、tzxdtc、xxholly32、LittleWang6770、rexarski、shawnharmsen、**财";
 }
 
 .i18n-miao-people-desc:before {
-  content: '数据每周手动更新，当前 157 位朋友喜欢汤圆可乐';
+  content: "数据每周手动更新，当前 157 位朋友喜欢汤圆可乐";
 }
-[lang='en'] .i18n-miao-people-desc:before {
-  content: 'Weekly manual update, 157 friends like TangYuan and Coke';
+[lang="en"] .i18n-miao-people-desc:before {
+  content: "Weekly manual update, 157 friends like TangYuan and Coke";
 }
 
 body {
-  font-family: 'LXGW WenKai Lite', sans-serif;
+  font-family: "LXGW WenKai Lite", sans-serif;
   font-display: swap;
 }
 
@@ -33,51 +33,50 @@ body {
 }
 
 .i18n-miao-href:before {
-  content: '喂猫 ❤️';
+  content: "打赏 ❤️";
 }
-[lang='en'] .i18n-miao-href:before {
-  content: 'Like ❤️';
+[lang="en"] .i18n-miao-href:before {
+  content: "Like ❤️";
 }
 
 .i18n-miao-people:before {
-  content: '喂猫的朋友们';
+  content: "打赏的朋友们";
 }
-[lang='en'] .i18n-miao-people:before {
-  content: 'Friends who feed cats';
+[lang="en"] .i18n-miao-people:before {
+  content: "Friends who feed cats";
 }
 
 .i18n-share-twitter:before {
-  content: '一键分享到 Twitter';
+  content: "一键分享到 Twitter";
 }
-[lang='en'] .i18n-share-twitter:before {
-  content: 'Share To Twitter';
+[lang="en"] .i18n-share-twitter:before {
+  content: "Share To Twitter";
 }
 
 .i18n-miao-people-nums:before {
   content: var(--data-friend);
 }
-[lang='en'] .i18n-miao-people-nums:before {
+[lang="en"] .i18n-miao-people-nums:before {
   content: var(--data-friend);
 }
 
 .i18n-home-href:before {
-  content: '首页';
+  content: "首页";
 }
-[lang='en'] .i18n-home-href:before {
-  content: 'Home';
+[lang="en"] .i18n-home-href:before {
+  content: "Home";
 }
 
 .i18n-switch-lang:before {
-  content: 'EN';
+  content: "EN";
 }
-[lang='en'] .i18n-switch-lang:before {
-  content: '中文';
+[lang="en"] .i18n-switch-lang:before {
+  content: "中文";
 }
 
-
-[lang='en'] .i18n-title {
-  letter-spacing: normal;
-  zoom: 0.86;
+[lang="en"] .i18n-title {
+  /* letter-spacing: normal; */
+  /* zoom: 0.86; */
   margin-right: 12px;
 }
 
@@ -86,111 +85,111 @@ body {
 }
 
 .i18n-title:before {
-  content: '妙言';
+  content: "Block Share Card";
 }
 
-[lang='en'] .i18n-title:before {
-  content: 'MiaoYan';
+[lang="en"] .i18n-title:before {
+  content: "Block Share Card";
 }
 
 .i18n-cats-desc:before {
-  content: '觉得不错？可以给我家「汤圆 & 可乐」买 🥩🍤 罐头吃！';
+  content: "觉得不错？可以给我家「汤圆 & 可乐」买 🥩🍤 罐头吃！";
 }
-[lang='en'] .i18n-cats-desc:before {
-  content: 'Like it? Buy 🥩🍤 cans for my「TangYuan & Coke」.';
+[lang="en"] .i18n-cats-desc:before {
+  content: "Like it? Buy 🥩🍤 cans for my「TangYuan & Coke」.";
 }
 
 .i18n-description:before {
-  content: '轻灵的 Markdown 笔记本伴你写出妙言~';
+  content: "轻松在移动和桌面设备上分享 Roam Research 区块~";
 }
-[lang='en'] .i18n-description:before {
-  content: 'Lightweight Markdown app to help you write great sentences.';
+[lang="en"] .i18n-description:before {
+  content: "Easily share Roam blocks on mobile and desktop devices.";
 }
 
-[lang='en'] .i18n-description {
+[lang="en"] .i18n-description {
   width: 105%;
 }
 
 .i18n-download:before {
-  content: '下载';
+  content: "下载";
 }
-[lang='en'] .i18n-download:before {
-  content: 'Download';
+[lang="en"] .i18n-download:before {
+  content: "Download";
 }
 
 .i18n-feature:before {
-  content: '特征';
+  content: "特征";
 }
-[lang='en'] .i18n-feature:before {
-  content: 'Features';
+[lang="en"] .i18n-feature:before {
+  content: "Features";
 }
 .i18n-miao:before {
-  content: '妙';
+  content: "安全";
 }
-[lang='en'] .i18n-miao:before {
-  content: 'Fantastic';
+[lang="en"] .i18n-miao:before {
+  content: "Safe";
 }
 .i18n-miao-desc:before {
-  content: '1. 纯本地使用，无需联网即可使用，源文件保存\a 2. 安全，完全开源 Github，不会上传用户信息\a 3. 支持语法高亮、黑暗模式、国际化、演示模式、单独编辑模式、PPT 模式、导出文件、内部跳转、自动排版、图床、LaTeX、Mermaid、PlantUML、Markmap';
+  content: "1. 纯本地操作，无需联网\a 2. 安全可靠，完全开源，保护隐私";
 }
-[lang='en'] .i18n-miao-desc:before {
-  content: '1. Purely local, no internet access required, source files saved.\a 2. Secure, fully open source Github, no user information uploaded.\a 3. Supports syntax highlighting, dark mode, internationalization, presentation mode, PPT mode, single edit mode, export file, internal jump, document auto typesetting, picture upload, laTeX, mermaid, plantUML, Markmap.';
+[lang="en"] .i18n-miao-desc:before {
+  content: "1. Purely local use, no internet needed.\a 2. Secure and private, fully open-source.";
 }
 
 @media (min-width: 1024px) {
-  [lang='en'] .i18n-jian-view.lg\:pl-48,
-  [lang='en'] .i18n-mei-view.lg\:pl-48 {
+  [lang="en"] .i18n-jian-view.lg\:pl-48,
+  [lang="en"] .i18n-mei-view.lg\:pl-48 {
     padding-left: 4rem;
   }
 }
 .i18n-mei:before {
-  content: '美';
+  content: "分享";
 }
-[lang='en'] .i18n-mei:before {
-  content: 'Beauty';
+[lang="en"] .i18n-mei:before {
+  content: "Share";
 }
 .i18n-mei-desc:before {
-  content: '1. 极简的设计风格，没有多余的东西\a 2. 文件夹 + 文件列表 + 编辑器三栏设计，可收起\a 3. 中文默认使用霞鹜文楷字体，让文字也很美';
+  content: "1. 单击即可分享当前放大区块的图像\a 2. 图像自动调整至适合移动或桌面设备的尺寸\a 3. 优化的图像输出确保清晰可读";
 }
-[lang='en'] .i18n-mei-desc:before {
-  content: '1. Minimalist design style, no unnecessary stuff.\a 2. Folder + Note list + Editor three-column design, can be tucked away.\a 3. Chinese default use LxgwWenKai font, make the text is also beautiful.';
+[lang="en"] .i18n-mei-desc:before {
+  content: "1. Instantly share the zoomed-in block as an image.\a 2. Automatically resized images for mobile or desktop.\a 3. Optimized image output for clarity and readability.";
 }
 
 .i18n-kuai:before {
-  content: '快';
+  content: "优化";
 }
-[lang='en'] .i18n-kuai:before {
-  content: 'Fast';
+[lang="en"] .i18n-kuai:before {
+  content: "Optimize";
 }
 .i18n-kuai-desc:before {
-  content: '1. 使用 Swift5 开发，原生极致性能\a 2. 对多文件做了特别的性能优化，确保不卡顿\a 3. 相比当前市面上套壳 Web 的方式轻巧很多';
+  content: "1. 为移动和桌面视图特别优化\a 2. 支持快速下载到指定文件夹\a 3. 跨平台分享无障碍";
 }
-[lang='en'] .i18n-kuai-desc:before {
-  content: '1. Developed in Swift5 for the ultimate in native performance.\a 2. Specially optimized for multi-file performance to ensure no lag.\a 3. Much lighter than any electron app on the market.';
+[lang="en"] .i18n-kuai-desc:before {
+  content: "1. Specially optimized for mobile and desktop views.\a 2. Supports quick download to a specified folder.\a 3. Easy sharing across platforms.";
 }
 
 .i18n-jian:before {
-  content: '简';
+  content: "简单";
 }
-[lang='en'] .i18n-jian:before {
-  content: 'Simple';
+[lang="en"] .i18n-jian:before {
+  content: "Simple";
 }
 .i18n-jian-desc:before {
-  content: '1. 操作过程很轻巧，不耽误你的时间\a 2. 编辑体验媲美原生代码编辑器\a 3. 内置众多快捷键助你快人一步';
+  content: "1. 在 Roam Depot 搜索并安装\a 2. 简单的点击操作即可使用\a 3. 便捷的工具栏图标快速访问";
 }
-[lang='en'] .i18n-jian-desc:before {
-  content: '1. The operation process is very light and does not delay your time.\a 2. Editing experience comparable to native code editor.\a 3. Many built-in shortcuts to help you get up to speed.';
+[lang="en"] .i18n-jian-desc:before {
+  content: "1. Search and install via Roam Depot.\a 2. Easy to use with just a few clicks.\a 3. Convenient toolbar icon for quick access.";
 }
 
 .i18n-footer-title:before {
-  content: '觉得不错？';
+  content: "觉得不错？";
 }
-[lang='en'] .i18n-footer-title:before {
-  content: 'Feel Good?';
+[lang="en"] .i18n-footer-title:before {
+  content: "Feel Good?";
 }
 .i18n-footer-desc:before {
-  content: '将妙言分享给你志同道合的朋友~';
+  content: "分享给你志同道合的朋友~";
 }
-[lang='en'] .i18n-footer-desc:before {
-  content: 'Share MiaoYan with your like-minded friends~';
+[lang="en"] .i18n-footer-desc:before {
+  content: "Share with your like-minded friends~";
 }

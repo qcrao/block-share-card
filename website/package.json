@@ -1,12 +1,12 @@
 {
   "name": "MiaoYan",
   "version": "1.0.0",
-  "description": "轻灵的 Markdown 笔记本伴你写出妙言~",
+  "description": "Block Share Card 扩展，轻松在移动和桌面设备上分享 Roam Research 区块~",
   "main": "index.js",
   "scripts": {
     "build": "postcss tailwind.css -o build.css",
     "watch": "postcss tailwind.css -o build.css  --watch",
-    "serve": "http-server -p 8080 -c-1",
+    "serve": "http-server -p 8081 -c-1",
     "dev": "npm-run-all --parallel serve watch",
     "start": "npm run dev"
   },
