@@ -124,16 +124,16 @@ body {
   content: "Features";
 }
 .i18n-miao:before {
-  content: "妙";
+  content: "安全";
 }
 [lang="en"] .i18n-miao:before {
-  content: "Fantastic";
+  content: "Safe";
 }
 .i18n-miao-desc:before {
-  content: "1. 纯本地使用，无需联网即可使用，源文件保存\a 2. 安全，完全开源 Github，不会上传用户信息\a 3. 支持语法高亮、黑暗模式、国际化、演示模式、单独编辑模式、PPT 模式、导出文件、内部跳转、自动排版、图床、LaTeX、Mermaid、PlantUML、Markmap";
+  content: "1. 纯本地操作，无需联网\a 2. 安全可靠，完全开源，保护隐私";
 }
 [lang="en"] .i18n-miao-desc:before {
-  content: "1. Purely local, no internet access required, source files saved.\a 2. Secure, fully open source Github, no user information uploaded.\a 3. Supports syntax highlighting, dark mode, internationalization, presentation mode, PPT mode, single edit mode, export file, internal jump, document auto typesetting, picture upload, laTeX, mermaid, plantUML, Markmap.";
+  content: "1. Purely local use, no internet needed.\a 2. Secure and private, fully open-source.";
 }
 
 @media (min-width: 1024px) {
@@ -143,42 +143,42 @@ body {
   }
 }
 .i18n-mei:before {
-  content: "美";
+  content: "分享";
 }
 [lang="en"] .i18n-mei:before {
-  content: "Beauty";
+  content: "Share";
 }
 .i18n-mei-desc:before {
-  content: "1. 极简的设计风格，没有多余的东西\a 2. 文件夹 + 文件列表 + 编辑器三栏设计，可收起\a 3. 中文默认使用霞鹜文楷字体，让文字也很美";
+  content: "1. 单击即可分享当前放大区块的图像\a 2. 图像自动调整至适合移动或桌面设备的尺寸\a 3. 优化的图像输出确保清晰可读";
 }
 [lang="en"] .i18n-mei-desc:before {
-  content: "1. Minimalist design style, no unnecessary stuff.\a 2. Folder + Note list + Editor three-column design, can be tucked away.\a 3. Chinese default use LxgwWenKai font, make the text is also beautiful.";
+  content: "1. Instantly share the zoomed-in block as an image.\a 2. Automatically resized images for mobile or desktop.\a 3. Optimized image output for clarity and readability.";
 }
 
 .i18n-kuai:before {
-  content: "快";
+  content: "优化";
 }
 [lang="en"] .i18n-kuai:before {
-  content: "Fast";
+  content: "Optimize";
 }
 .i18n-kuai-desc:before {
-  content: "1. 使用 Swift5 开发，原生极致性能\a 2. 对多文件做了特别的性能优化，确保不卡顿\a 3. 相比当前市面上套壳 Web 的方式轻巧很多";
+  content: "1. 为移动和桌面视图特别优化\a 2. 支持快速下载到指定文件夹\a 3. 跨平台分享无障碍";
 }
 [lang="en"] .i18n-kuai-desc:before {
-  content: "1. Developed in Swift5 for the ultimate in native performance.\a 2. Specially optimized for multi-file performance to ensure no lag.\a 3. Much lighter than any electron app on the market.";
+  content: "1. Specially optimized for mobile and desktop views.\a 2. Supports quick download to a specified folder.\a 3. Easy sharing across platforms.";
 }
 
 .i18n-jian:before {
-  content: "简";
+  content: "简单";
 }
 [lang="en"] .i18n-jian:before {
   content: "Simple";
 }
 .i18n-jian-desc:before {
-  content: "1. 操作过程很轻巧，不耽误你的时间\a 2. 编辑体验媲美原生代码编辑器\a 3. 内置众多快捷键助你快人一步";
+  content: "1. 在 Roam Depot 搜索并安装\a 2. 简单的点击操作即可使用\a 3. 便捷的工具栏图标快速访问";
 }
-[lang="en"] .i18n-jian-desc:before {
-  content: "1. The operation process is very light and does not delay your time.\a 2. Editing experience comparable to native code editor.\a 3. Many built-in shortcuts to help you get up to speed.";
+[lang="en"] .iain-jian-desc:before {
+  content: "1. Search and install via Roam Depot.\a 2. Easy to use with just a few clicks.\a 3. Convenient toolbar icon for quick access.";
 }
 
 .i18n-footer-title:before {
