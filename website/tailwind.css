@@ -3,14 +3,14 @@
 @import "tailwindcss/utilities";
 
 :root {
-  --data-friend: "木子君、Jerk、芸璟、薛定谔的盲盒、沙溪、忸祁、*锐、木呀、π~mong、Hsin、Kake、喜多🍒、**飞、陆蔚青 sluke、红色的弓箭手、Catch、子岚、Linmi、小小小小小国、zhyncs、YuYuMi、匿名妙友、**辉、Robin、孑虚乌有、嗨嗨皮、熏锅锅、**泰、EugEnE 六金、Chen Chen、走鹃、飞🇨🇳🇨🇳、刘奇、**雄、邓旭东、**主、**得、*过、Wayne、再见孙悟空、牧野 Peikon、Grug、**文、奥特饭、LXC、瓮 J、董超、永遇乐、匿名妙友、Koobal、simonkuang、大团🐱、xiang、凨、Jimmy、互花米草、嘟嘟噜、晶晶、CLICK、折宝亭、*懂、*双、*泰、January、**招、Kamus、MING、WZ、夏清昕_Nicole、Rio :)、星星、Kieda、我们的曾经、*钦、我们的曾经、匿名妙友、Devqiu599、**梅、匿名妙友、坐和坐宽、匿名妙友、pan、明明会多努力学习、匿名妙友、Zan_Minkian、匿名妙友、李騁昊、西苑前、depthsy、Frank、Arthur、匿名妙友、Uwant、我L.N、Yorks0n、匿名妙友、曉傑同學、MartinKuo-XY、Pake很好用、刘青林、刘志龙、Images、毛毛、Remember、Feng、Edward、**书、Devqiu599、Shawn Harmsen、xxholly32、晚天、**谷、*祥、南京雨花吴彦祖、屠夫哥哥、Cheers、Cindy、严济之、落叶挽歌、xxholly32、匿名妙友、LL、美式咖啡、yancey、阿栋 Adonis、**渝、*鑫、**玲、**飞、**伦、darklinden、夏永锋、匿名妙友、Burn、XX、hpc4you阿斌、Reda、Joe-董健、HatMatrix、*洋、匿名妙友、世界线收束、一身都是月、匿名妙友、lx、匿名妙友、davywalker、匿名妙友、赵环宇 Henry、HE、tzxdtc、xxholly32、LittleWang6770、rexarski、shawnharmsen、**财";
+  --data-friend: "WillMc93、praetor29";
 }
 
 .i18n-miao-people-desc:before {
-  content: "数据每周手动更新，当前 157 位朋友喜欢汤圆可乐";
+  content: "数据每周手动更新，当前 2 位朋友喜欢汤圆可乐";
 }
 [lang="en"] .i18n-miao-people-desc:before {
-  content: "Weekly manual update, 157 friends like TangYuan and Coke";
+  content: "Weekly manual update, 2 friends like TangYuan and Coke";
 }
 
 body {
@@ -24,7 +24,7 @@ body {
 }
 
 .gradient {
-  background: linear-gradient(60deg, #36563c 0%, #36563c 100%);
+  background: linear-gradient(60deg, #ce9178 0%, #ce9178 100%);
 }
 
 .i18n-switch-lang,
