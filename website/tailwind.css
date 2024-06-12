@@ -43,7 +43,7 @@ body {
   content: "打赏的朋友们";
 }
 [lang="en"] .i18n-miao-people:before {
-  content: "Friends who feed cats";
+  content: "Friends who feed me";
 }
 
 .i18n-share-twitter:before {
@@ -93,10 +93,10 @@ body {
 }
 
 .i18n-cats-desc:before {
-  content: "觉得不错？可以给我家「汤圆 & 可乐」买 🥩🍤 罐头吃！";
+  content: "觉得不错？可以请我喝杯咖啡！";
 }
 [lang="en"] .i18n-cats-desc:before {
-  content: "Like it? Buy 🥩🍤 cans for my「TangYuan & Coke」.";
+  content: "Like it? Buy me a coffee!";
 }
 
 .i18n-description:before {
