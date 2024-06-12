@@ -177,7 +177,7 @@ body {
 .i18n-jian-desc:before {
   content: "1. 在 Roam Depot 搜索并安装\a 2. 简单的点击操作即可使用\a 3. 便捷的工具栏图标快速访问";
 }
-[lang="en"] .iain-jian-desc:before {
+[lang="en"] .i18n-jian-desc:before {
   content: "1. Search and install via Roam Depot.\a 2. Easy to use with just a few clicks.\a 3. Convenient toolbar icon for quick access.";
 }
 
