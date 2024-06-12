@@ -27,11 +27,11 @@
     />
     <meta
       property="og:image"
-      content="https://miaoyan.app/Release/img/logo.png"
+      content="https://raw.githubusercontent.com/qcrao/block-share-card/079e1148cd7fb1bc0325443682b8310350a6655b/website/assets/logo.svg"
     />
 
     <!-- Twitter -->
-    <meta name="twitter:creator" content="HiTw93" />
+    <meta name="twitter:creator" content="qcrao" />
     <meta name="twitter:site" content="https://block-share-card.qcrao.com/" />
     <meta property="twitter:card" content="summary_large_image" />
     <meta
@@ -41,14 +41,14 @@
     <meta property="twitter:title" content="妙言" />
     <meta
       property="twitter:description"
-      content="轻灵的 Markdown 笔记本伴你写出妙言~"
+      content="Block Share Card 扩展，轻松在移动和桌面设备上分享 Roam Research 区块~"
     />
     <meta
       property="twitter:image"
-      content="https://miaoyan.app/Release/img/big-logo.png"
+      content="https://raw.githubusercontent.com/qcrao/block-share-card/079e1148cd7fb1bc0325443682b8310350a6655b/website/assets/logo.svg"
     />
-    <meta name="keywords" content="Markdown,Tw93,MiaoYan,MacApp,Swift" />
-    <meta name="author" content="Tw93" />
+    <meta name="keywords" content="Roam Research,qcrao,Block Share Card" />
+    <meta name="author" content="qcrao" />
     <link rel="shortcut icon" href="./assets/logo.svg" type="image/x-icon" />
     <link rel="icon" href="./assets/logo.svg" type="image/x-icon" />
     <link
@@ -76,23 +76,18 @@
         >
           <img src="./assets/logo.svg" width="138" />
           <h1
-            class="i18n-title my-4 lg:text-8xl text-7xl font-extrabold leading-tight tracking-widest"
+            class="i18n-title my-4 lg:text-4xl text-2xl font-extrabold leading-tight tracking-widest"
           ></h1>
-          <div class="flex flex-row md:w-2/5 text-xm">
+          <div class="flex flex-row md:w-4/5 text-xm">
             <div
               class="lg:px-3 px-2 py-0.5 rounded-lg border border-yellow-100 border-solid text-white lg:mr-4 mr-3"
             >
-              Swift5
+              Roam Research
             </div>
             <div
               class="lg:px-3 px-2 py-0.5 rounded-lg border border-yellow-100 border-solid text-white lg:mr-4 mr-3"
             >
-              MacOS
-            </div>
-            <div
-              class="lg:px-3 px-2 py-0.5 rounded-lg border border-yellow-100 border-solid text-white lg:mr-4 mr-3"
-            >
-              Editor
+              Extension
             </div>
             <div
               class="lg:px-3 px-2 py-0.5 rounded-lg border border-yellow-100 border-solid text-white"
@@ -106,14 +101,14 @@
 
           <div class="flex flex-row items-center">
             <a
-              href="https://github.com/tw93/MiaoYan"
+              href="https://github.com/qcrao/block-share-card"
               target="_blank"
               class="text-center w-32 hover:underline text-white font-bold rounded-xl lg:my-6 my-3 py-3 px-4 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out text-lg bg-slate-900 border border-solid border-slate-900"
             >
               Github
             </a>
             <a
-              href="https://github.com/tw93/MiaoYan/releases/latest"
+              href="https://github.com/qcrao/block-share-card"
               target="_blank"
               class="i18n-download mx-auto w-32 text-center lg:mx-0 hover:underline bg-white text-black font-bold rounded-xl lg:my-6 my-3 py-3 px-4 shadow-lg focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out text-lg lg:ml-8 ml-5"
             >
@@ -343,10 +338,13 @@
               "https://twitter.com/intent/tweet?text=%23%E5%A6%99%E8%A8%80%20MiaoYan%20-%20a%20simple%20and%20good-looking%20open-source%20mac%20markdown%20editor,%20without%20any%20redundant%20functions,%20is%20developed%20using%20swift,%20pure%20local%20use,%20has%20functions%20such%20as%20syntax%20highlighting,%20automatic%20formatting,%20presentation%20mode%20etc.&url=https://miaoyan.app"
             );
           } else {
-            document.title = "妙言";
+            document.title = "Block Share Card";
             document
               .querySelector('meta[name="description"]')
-              .setAttribute("content", "轻灵的 Markdown 笔记本伴你写出妙言~");
+              .setAttribute(
+                "content",
+                "轻松在移动和桌面设备上分享 Roam Research 区块~~"
+              );
 
             $gif.setAttribute(
               "src",
