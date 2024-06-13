@@ -62,6 +62,11 @@ export async function shareImage(memo, isMobile, extensionAPI) {
     }
   }
 
+  const roamArticle = document.querySelector(".roam-article");
+  if (roamArticle) {
+    roamArticle.style.color = "#202B33";
+  }
+
   const options = {
     logging: false,
     scale: 3,
@@ -111,6 +116,11 @@ function reset() {
   document
     .querySelector(".share-memex-container")
     .classList.remove("share-memex-container");
+
+  const roamArticle = document.querySelector(".roam-article");
+  if (roamArticle) {
+    roamArticle.style.removeProperty("color");
+  }
 }
 
 export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
