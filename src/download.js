@@ -73,12 +73,12 @@ export async function shareImage(memo, isMobile, extensionAPI) {
   if (cardStyle === "Default") {
     options.backgroundColor = "#FEFCF6";
     document.documentElement.style.setProperty(
-      "--share-bloack-card-font-family-base",
+      "--share-block-card-font-family-base",
       '"LXGW WenKai", -apple-system, "Microsoft YaHei", "SimSun", sans-serif'
     );
   } else {
     document.documentElement.style.setProperty(
-      "--share-bloack-card-font-family-base",
+      "--share-block-card-font-family-base",
       "inherit"
     );
   }

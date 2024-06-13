@@ -4,7 +4,8 @@
 }
 
 .share-memex-container span {
-  font-family: var(--share-bloack-card-font-family-base);
+  font-family: var(--share-block-card-font-family-base);
+  color: var(--share-block-card-font-color);
 }
 
 .share-memex-container .rm-block-main,
@@ -73,7 +74,8 @@ div.content strong {
 
 #share-card-header .memo .author .at {
   font-size: 14px;
-  font-family: var(--share-bloack-card-font-family-base);
+  font-family: var(--share-block-card-font-family-base);
+  color: var(--share-block-card-font-color);
   font-weight: bold;
   display: inline-block;
   vertical-align: middle;
@@ -81,7 +83,8 @@ div.content strong {
 
 #share-card-header .memo .author .username {
   font-size: 14px;
-  font-family: var(--share-bloack-card-font-family-base);
+  font-family: var(--share-block-card-font-family-base);
+  color: var(--share-block-card-font-color);
   font-weight: bold;
   display: inline-block;
   vertical-align: middle;
@@ -90,7 +93,8 @@ div.content strong {
 /* 优化导出样式 */
 #share-card-header .memo .time {
   width: 100%;
-  font-family: var(--share-bloack-card-font-family-base);
+  font-family: var(--share-block-card-font-family-base);
+  color: var(--share-block-card-font-color);
   font-size: 14px;
   flex-grow: 1;
   /* text-align: right; */
