@@ -6,16 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Block Share Card is a Roam Research extension that allows users to share zoomed-in blocks as images optimized for mobile (320px) or desktop (640px) viewing.
 
-## Build Commands
+## Build Command
 
 ```bash
-# Build the extension for Roam Depot
-./build.sh              # Runs npm install, then npx roamjs-scripts build --depot
-
-# Website development (in website/ directory)
-cd website
-npm run dev             # Runs http-server and postcss watcher in parallel
-npm run build           # Build CSS with postcss
+./build.sh    # npm install && npx roamjs-scripts build --depot
 ```
 
 ## Architecture
@@ -36,9 +30,6 @@ npm run build           # Build CSS with postcss
 - `src/api/roamQueries.js` - Datalog queries for Roam's database (block counts, dates)
 - `src/api/roamSelect.js` - Extracts block metadata from DOM attributes
 - `extension.css` - Styles for the share card (header, footer, double-line divider)
-
-### Website
-The `website/` directory is a separate static site using Tailwind CSS, unrelated to the extension functionality.
 
 ## Technical Notes
 
