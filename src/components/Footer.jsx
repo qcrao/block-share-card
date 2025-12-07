@@ -1,17 +1,14 @@
-export function Footer({ blocksNum, usageDays, block }) {
+export function Footer({ blocksNum, usageDays }) {
   return (
-    <>
-      <div className="footer">
-        <div className="via">
-          <span>Via Roam Research</span>
-        </div>
-
-        <div className="stat">
-          <span>{blocksNum} BLOCKS · </span>
-          <span>{usageDays} DAYS</span>
-        </div>
+    <div className="footer">
+      <div className="via">
+        <span>Via Roam Research</span>
       </div>
-      <img src="" className="share-card" />
-    </>
+
+      <div className="stat">
+        <span>{blocksNum || 0} BLOCKS · </span>
+        <span>{usageDays || 0} DAYS</span>
+      </div>
+    </div>
   );
 }

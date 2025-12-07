@@ -14,7 +14,7 @@ let isProcessing = false;
 let headerRoot = null;
 let footerRoot = null;
 
-export function renderFooter(blocksNum, usageDays, memo) {
+export function renderFooter(blocksNum, usageDays) {
   const container = document.getElementById("share-card-footer");
   if (!container) {
     console.error("Footer container not found");
@@ -25,20 +25,12 @@ export function renderFooter(blocksNum, usageDays, memo) {
   if (ReactDOM.createRoot) {
     footerRoot = ReactDOM.createRoot(container);
     footerRoot.render(
-      html`<${Footer}
-        blocksNum=${blocksNum}
-        usageDays=${usageDays}
-        block=${memo}
-      />`
+      html`<${Footer} blocksNum=${blocksNum} usageDays=${usageDays} />`
     );
   } else {
     // Fallback for older React versions
     ReactDOM.render(
-      html`<${Footer}
-        blocksNum=${blocksNum}
-        usageDays=${usageDays}
-        block=${memo}
-      />`,
+      html`<${Footer} blocksNum=${blocksNum} usageDays=${usageDays} />`,
       container
     );
   }
@@ -73,44 +65,56 @@ export async function shareImage(memo, isMobile, extensionAPI) {
   }
   const originalStyles = node.style.cssText;
 
+  // Cache DOM queries for better performance
+  const headerMemo = node.querySelector("#share-card-header .memo");
+  const footerElement = node.querySelector("#share-card-footer .footer");
+  const roamArticle = document.querySelector(".roam-article");
+
+  // Fetch settings in parallel for better performance
+  const [cardStyle, disableShowBlockAndDays] = await Promise.all([
+    extensionAPI.settings.get("card-style"),
+    extensionAPI.settings.get("disable-blocks-info-setting"),
+  ]);
+
+  // Apply layout styles based on mobile/desktop mode
   if (isMobile) {
     node.style.setProperty("width", "320px", "important");
 
-    const authorElement = node.querySelector(
-      "#share-card-header .memo .author"
-    );
+    const authorElement = headerMemo?.querySelector(".author");
     if (authorElement) {
       authorElement.style.setProperty("width", "100%", "important");
     }
   } else {
     node.style.setProperty("width", "640px", "important");
 
-    let headerMemo = node.querySelector("#share-card-header .memo");
     if (headerMemo) {
-      headerMemo.style.justifyContent = "space-between";
-      headerMemo.style.alignItems = "center";
-      headerMemo.style.flexDirection = "initial";
+      Object.assign(headerMemo.style, {
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "initial",
+      });
     }
 
-    let footerElement = node.querySelector("#share-card-footer .footer");
     if (footerElement) {
-      footerElement.style.justifyContent = "space-between";
-      footerElement.style.alignItems = "center";
-      footerElement.style.flexDirection = "initial";
-      footerElement.style.padding = "0 20px 10px";
+      Object.assign(footerElement.style, {
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "initial",
+        padding: "0 20px 10px",
+      });
     }
 
-    let timeElement = node.querySelector("#share-card-header .memo .time");
+    const timeElement = headerMemo?.querySelector(".time");
     if (timeElement) {
       timeElement.style.textAlign = "right";
     }
   }
 
-  const roamArticle = document.querySelector(".roam-article");
   if (roamArticle) {
     roamArticle.style.color = "#202B33";
   }
 
+  // Configure html2canvas options
   const options = {
     logging: false,
     scale: 3,
@@ -118,7 +122,7 @@ export async function shareImage(memo, isMobile, extensionAPI) {
     letterRendering: true,
   };
 
-  const cardStyle = await extensionAPI.settings.get("card-style");
+  // Apply card style
   if (cardStyle === "Default") {
     options.backgroundColor = "#FEFCF6";
     document.documentElement.style.setProperty(
@@ -132,23 +136,20 @@ export async function shareImage(memo, isMobile, extensionAPI) {
     );
   }
 
-  const disableShowBlockAndDays = await extensionAPI.settings.get(
-    "disable-blocks-info-setting"
-  );
-  const footerStatElement = document.querySelector(
-    "#share-card-footer .footer .stat"
-  );
-  if (disableShowBlockAndDays && footerStatElement) {
-    footerStatElement.style.display = "none";
+  // Hide stats if disabled
+  if (disableShowBlockAndDays) {
+    const footerStatElement = footerElement?.querySelector(".stat");
+    if (footerStatElement) {
+      footerStatElement.style.display = "none";
+    }
   }
 
   const canvas = await html2canvas(node, options);
-
   const imageSrc = canvas.toDataURL("image/png", 1);
 
   downloadImage(imageSrc, memo, isMobile);
 
-  // reset header and footer
+  // Reset styles and cleanup
   node.style.cssText = originalStyles;
   reset();
   return imageSrc;
@@ -266,7 +267,7 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
       const memo = { ...activeBlock };
 
       renderHeader(memo, extensionAPI);
-      renderFooter(blocksNum, usageDays, memo);
+      renderFooter(blocksNum, usageDays);
 
       await shareImage(memo, isMobile, extensionAPI);
     } else {
