@@ -7,26 +7,70 @@ import { Header } from "./components/Header";
 import { daysBetween } from "./utils/dateUtils";
 import { downloadImage } from "./utils/imageUtils";
 
+// Lock to prevent concurrent share operations
+let isProcessing = false;
+
+// Store React roots for proper cleanup
+let headerRoot = null;
+let footerRoot = null;
+
 export function renderFooter(blocksNum, usageDays, memo) {
-  ReactDOM.render(
-    html`<${Footer}
-      blocksNum=${blocksNum}
-      usageDays=${usageDays}
-      block=${memo}
-    />`,
-    document.getElementById("share-card-footer")
-  );
+  const container = document.getElementById("share-card-footer");
+  if (!container) {
+    console.error("Footer container not found");
+    return;
+  }
+
+  // Use createRoot API (React 18+)
+  if (ReactDOM.createRoot) {
+    footerRoot = ReactDOM.createRoot(container);
+    footerRoot.render(
+      html`<${Footer}
+        blocksNum=${blocksNum}
+        usageDays=${usageDays}
+        block=${memo}
+      />`
+    );
+  } else {
+    // Fallback for older React versions
+    ReactDOM.render(
+      html`<${Footer}
+        blocksNum=${blocksNum}
+        usageDays=${usageDays}
+        block=${memo}
+      />`,
+      container
+    );
+  }
 }
 
 export function renderHeader(memo, extensionAPI) {
-  ReactDOM.render(
-    html`<${Header} block=${memo} extensionAPI=${extensionAPI} />`,
-    document.getElementById("share-card-header")
-  );
+  const container = document.getElementById("share-card-header");
+  if (!container) {
+    console.error("Header container not found");
+    return;
+  }
+
+  // Use createRoot API (React 18+)
+  if (ReactDOM.createRoot) {
+    headerRoot = ReactDOM.createRoot(container);
+    headerRoot.render(
+      html`<${Header} block=${memo} extensionAPI=${extensionAPI} />`
+    );
+  } else {
+    // Fallback for older React versions
+    ReactDOM.render(
+      html`<${Header} block=${memo} extensionAPI=${extensionAPI} />`,
+      container
+    );
+  }
 }
 
 export async function shareImage(memo, isMobile, extensionAPI) {
   const node = document.querySelector(".share-memex-container");
+  if (!node) {
+    throw new Error("Share container not found");
+  }
   const originalStyles = node.style.cssText;
 
   if (isMobile) {
@@ -111,11 +155,30 @@ export async function shareImage(memo, isMobile, extensionAPI) {
 }
 
 function reset() {
-  document.querySelector("#share-card-header").remove();
-  document.querySelector("#share-card-footer").remove();
-  document
-    .querySelector(".share-memex-container")
-    .classList.remove("share-memex-container");
+  // Unmount React roots before removing elements
+  if (headerRoot) {
+    headerRoot.unmount();
+    headerRoot = null;
+  }
+  if (footerRoot) {
+    footerRoot.unmount();
+    footerRoot = null;
+  }
+
+  const headerElement = document.querySelector("#share-card-header");
+  if (headerElement) {
+    headerElement.remove();
+  }
+
+  const footerElement = document.querySelector("#share-card-footer");
+  if (footerElement) {
+    footerElement.remove();
+  }
+
+  const shareContainer = document.querySelector(".share-memex-container");
+  if (shareContainer) {
+    shareContainer.classList.remove("share-memex-container");
+  }
 
   const roamArticle = document.querySelector(".roam-article");
   if (roamArticle) {
@@ -124,58 +187,98 @@ function reset() {
 }
 
 export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
-  const existing = document.getElementById("share-card");
-  if (!existing) {
-    const element = document.createElement("div");
-    element.id = "share-card";
-    document.querySelector(".bp3-portal").appendChild(element);
+  // Prevent concurrent share operations
+  if (isProcessing) {
+    console.warn("Share operation already in progress");
+    return;
   }
 
-  const min_date = await roamAlphaAPI.q(queryMinDate);
-  const usageDays = daysBetween(new Date(), new Date(min_date));
-  const blocksNum = await roamAlphaAPI.q(queryNonCodeBlocks);
+  isProcessing = true;
 
-  const currentZoomContainer = document.querySelector(
-    '[style="margin-left: -20px;"]'
-  );
-  const currentHighlightBlock = document.querySelector(
-    ".roam-toolkit-block-mode--highlight"
-  );
+  try {
+    const existing = document.getElementById("share-card");
+    if (!existing) {
+      const portal = document.querySelector(".bp3-portal");
+      if (portal) {
+        const element = document.createElement("div");
+        element.id = "share-card";
+        portal.appendChild(element);
+      }
+    }
 
-  // block-highlight-blue rm-block__self rm-block__input
-  if (currentZoomContainer || currentHighlightBlock) {
-    const blockContainer = currentZoomContainer
-      ? currentZoomContainer
-      : currentHighlightBlock.parentElement?.parentElement;
+    // Parallel API queries for better performance
+    let usageDays = 0;
+    let blocksNum = 0;
 
-    blockContainer.classList.add("share-memex-container");
+    try {
+      const [minDateResult, blocksNumResult] = await Promise.all([
+        roamAlphaAPI.q(queryMinDate),
+        roamAlphaAPI.q(queryNonCodeBlocks),
+      ]);
 
-    const header = document.createElement("div");
-    header.id = "share-card-header";
-    blockContainer.prepend(header);
+      if (minDateResult) {
+        usageDays = daysBetween(new Date(), new Date(minDateResult));
+      }
+      blocksNum = blocksNumResult || 0;
+    } catch (queryError) {
+      console.error("Failed to query Roam data:", queryError);
+      // Continue with default values
+    }
 
-    const doubleLine = document.createElement("div");
-    doubleLine.className = "double-line";
-    header.after(doubleLine);
-
-    const footer = document.createElement("div");
-    footer.id = "share-card-footer";
-    blockContainer.appendChild(footer);
-
-    const activeBlock = queryCurrentActiveBlockUID(
-      currentZoomContainer
-        ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
-        : currentHighlightBlock,
-      blockContainer
+    const currentZoomContainer = document.querySelector(
+      '[style="margin-left: -20px;"]'
+    );
+    const currentHighlightBlock = document.querySelector(
+      ".roam-toolkit-block-mode--highlight"
     );
 
-    const memo = { ...activeBlock };
+    if (currentZoomContainer || currentHighlightBlock) {
+      const blockContainer = currentZoomContainer
+        ? currentZoomContainer
+        : currentHighlightBlock.parentElement?.parentElement;
 
-    renderHeader(memo, extensionAPI);
-    renderFooter(blocksNum, usageDays, memo);
+      if (!blockContainer) {
+        alert("Unable to find block container. Please try again.");
+        return;
+      }
 
-    const imageSrc = await shareImage(memo, isMobile, extensionAPI);
-  } else {
-    alert("😜 Please zoom into(CMD+.) the block you want to share!");
+      blockContainer.classList.add("share-memex-container");
+
+      const header = document.createElement("div");
+      header.id = "share-card-header";
+      blockContainer.prepend(header);
+
+      const doubleLine = document.createElement("div");
+      doubleLine.className = "double-line";
+      header.after(doubleLine);
+
+      const footer = document.createElement("div");
+      footer.id = "share-card-footer";
+      blockContainer.appendChild(footer);
+
+      const activeBlock = queryCurrentActiveBlockUID(
+        currentZoomContainer
+          ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
+          : currentHighlightBlock,
+        blockContainer
+      );
+
+      const memo = { ...activeBlock };
+
+      renderHeader(memo, extensionAPI);
+      renderFooter(blocksNum, usageDays, memo);
+
+      await shareImage(memo, isMobile, extensionAPI);
+    } else {
+      const shortcut = navigator.platform.includes("Mac") ? "Cmd" : "Ctrl";
+      alert(`Please zoom into the block you want to share (${shortcut}+.)`);
+    }
+  } catch (error) {
+    console.error("Share operation failed:", error);
+    alert("Failed to generate share image. Please try again.");
+    // Attempt cleanup on error
+    reset();
+  } finally {
+    isProcessing = false;
   }
 }
