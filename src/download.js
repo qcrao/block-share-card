@@ -4,6 +4,7 @@ import { queryCurrentActiveBlockUID } from "./api/roamSelect";
 import { queryMinDate, queryNonCodeBlocks } from "./api/roamQueries";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
+import { ModernCard, extractBlockContent } from "./components/ModernCard";
 import { daysBetween } from "./utils/dateUtils";
 import { downloadImage } from "./utils/imageUtils";
 
@@ -13,6 +14,7 @@ let isProcessing = false;
 // Store React roots for proper cleanup
 let headerRoot = null;
 let footerRoot = null;
+let modernCardRoot = null;
 
 export function renderFooter(blocksNum, usageDays) {
   const container = document.getElementById("share-card-footer");
@@ -53,6 +55,44 @@ export function renderHeader(memo, extensionAPI) {
     // Fallback for older React versions
     ReactDOM.render(
       html`<${Header} block=${memo} extensionAPI=${extensionAPI} />`,
+      container
+    );
+  }
+}
+
+export function renderModernCard(memo, content, blocksNum, usageDays, showStats, extensionAPI, theme) {
+  const container = document.getElementById("modern-card-root");
+  if (!container) {
+    console.error("Modern card container not found");
+    return;
+  }
+
+  // Use createRoot API (React 18+)
+  if (ReactDOM.createRoot) {
+    modernCardRoot = ReactDOM.createRoot(container);
+    modernCardRoot.render(
+      html`<${ModernCard}
+        block=${memo}
+        content=${content}
+        blocksNum=${blocksNum}
+        usageDays=${usageDays}
+        showStats=${showStats}
+        extensionAPI=${extensionAPI}
+        theme=${theme}
+      />`
+    );
+  } else {
+    // Fallback for older React versions
+    ReactDOM.render(
+      html`<${ModernCard}
+        block=${memo}
+        content=${content}
+        blocksNum=${blocksNum}
+        usageDays=${usageDays}
+        showStats=${showStats}
+        extensionAPI=${extensionAPI}
+        theme=${theme}
+      />`,
       container
     );
   }
@@ -165,6 +205,10 @@ function reset() {
     footerRoot.unmount();
     footerRoot = null;
   }
+  if (modernCardRoot) {
+    modernCardRoot.unmount();
+    modernCardRoot = null;
+  }
 
   const headerElement = document.querySelector("#share-card-header");
   if (headerElement) {
@@ -184,6 +228,136 @@ function reset() {
   const roamArticle = document.querySelector(".roam-article");
   if (roamArticle) {
     roamArticle.style.removeProperty("color");
+  }
+
+  // Clean up modern card elements
+  const modernCardContainer = document.querySelector(".modern-card-wrapper");
+  if (modernCardContainer) {
+    modernCardContainer.remove();
+  }
+}
+
+/**
+ * Generate and download a modern style card image
+ */
+export async function shareModernCardImage(isMobile = false, theme = "light", extensionAPI) {
+  // Prevent concurrent share operations
+  if (isProcessing) {
+    console.warn("Share operation already in progress");
+    return;
+  }
+
+  isProcessing = true;
+
+  try {
+    // Parallel API queries for better performance
+    let usageDays = 0;
+    let blocksNum = 0;
+
+    try {
+      const [minDateResult, blocksNumResult] = await Promise.all([
+        roamAlphaAPI.q(queryMinDate),
+        roamAlphaAPI.q(queryNonCodeBlocks),
+      ]);
+
+      if (minDateResult) {
+        usageDays = daysBetween(new Date(), new Date(minDateResult));
+      }
+      blocksNum = blocksNumResult || 0;
+    } catch (queryError) {
+      console.error("Failed to query Roam data:", queryError);
+    }
+
+    const currentZoomContainer = document.querySelector(
+      '[style="margin-left: -20px;"]'
+    );
+    const currentHighlightBlock = document.querySelector(
+      ".roam-toolkit-block-mode--highlight"
+    );
+
+    if (currentZoomContainer || currentHighlightBlock) {
+      const blockContainer = currentZoomContainer
+        ? currentZoomContainer
+        : currentHighlightBlock.parentElement?.parentElement;
+
+      if (!blockContainer) {
+        alert("Unable to find block container. Please try again.");
+        return;
+      }
+
+      // Extract content from the block
+      const content = extractBlockContent(blockContainer);
+
+      // Get block metadata
+      const activeBlock = queryCurrentActiveBlockUID(
+        currentZoomContainer
+          ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
+          : currentHighlightBlock,
+        blockContainer
+      );
+
+      const memo = { ...activeBlock };
+
+      // Get settings
+      const disableShowBlockAndDays = await extensionAPI.settings.get("disable-blocks-info-setting");
+
+      // Create a wrapper container for the modern card
+      const wrapper = document.createElement("div");
+      wrapper.className = `modern-card-wrapper modern-card-container modern-card-container-${theme}`;
+      wrapper.style.cssText = `
+        position: fixed;
+        top: -9999px;
+        left: -9999px;
+        width: ${isMobile ? "320px" : "480px"};
+        z-index: -1;
+      `;
+
+      const cardRoot = document.createElement("div");
+      cardRoot.id = "modern-card-root";
+      wrapper.appendChild(cardRoot);
+
+      document.body.appendChild(wrapper);
+
+      // Render the modern card
+      renderModernCard(
+        memo,
+        content,
+        blocksNum,
+        usageDays,
+        !disableShowBlockAndDays,
+        extensionAPI,
+        theme
+      );
+
+      // Wait for React to render
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Capture the card as image
+      const options = {
+        logging: false,
+        scale: 3,
+        useCORS: true,
+        letterRendering: true,
+        backgroundColor: null, // Transparent to show gradient background
+      };
+
+      const canvas = await html2canvas(wrapper, options);
+      const imageSrc = canvas.toDataURL("image/png", 1);
+
+      downloadImage(imageSrc, memo, isMobile);
+
+      // Cleanup
+      reset();
+    } else {
+      const shortcut = navigator.platform.includes("Mac") ? "Cmd" : "Ctrl";
+      alert(`Please zoom into the block you want to share (${shortcut}+.)`);
+    }
+  } catch (error) {
+    console.error("Modern card share operation failed:", error);
+    alert("Failed to generate share image. Please try again.");
+    reset();
+  } finally {
+    isProcessing = false;
   }
 }
 

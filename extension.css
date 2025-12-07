@@ -135,3 +135,309 @@ div.content strong {
 :focus {
   outline: none !important;
 }
+
+/* ==================== Modern Card Styles ==================== */
+
+.modern-card {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Light Theme */
+.modern-card-light {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  color: #1e293b;
+}
+
+/* Dark Theme */
+.modern-card-dark {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  color: #f1f5f9;
+}
+
+/* Header */
+.modern-card-header {
+  position: relative;
+  padding: 24px 24px 16px;
+}
+
+.modern-header-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+}
+
+.modern-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modern-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modern-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.modern-username {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.modern-card-light .modern-username {
+  color: #334155;
+}
+
+.modern-card-dark .modern-username {
+  color: #e2e8f0;
+}
+
+.modern-time {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.modern-card-light .modern-time {
+  color: #94a3b8;
+}
+
+.modern-card-dark .modern-time {
+  color: #64748b;
+}
+
+/* Content */
+.modern-card-content {
+  padding: 8px 24px 24px;
+  min-height: 80px;
+}
+
+/* Paragraph style (article layout) */
+.modern-paragraph {
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0 0 16px 0;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.modern-card-light .modern-paragraph {
+  color: #1e293b;
+}
+
+.modern-card-dark .modern-paragraph {
+  color: #f1f5f9;
+}
+
+.modern-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Page Reference [[page]] styles - subtle underline style */
+.modern-page-ref {
+  font-weight: 500;
+  border-bottom: 1.5px solid;
+  padding-bottom: 1px;
+}
+
+.modern-page-ref-light {
+  color: #6366f1;
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.modern-page-ref-dark {
+  color: #a5b4fc;
+  border-color: rgba(165, 180, 252, 0.4);
+}
+
+/* Tag #tag styles */
+.modern-tag {
+  font-weight: 500;
+}
+
+.modern-tag-light {
+  color: #8b5cf6;
+}
+
+.modern-tag-dark {
+  color: #a78bfa;
+}
+
+/* Highlight styles */
+.modern-highlight {
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.modern-highlight-light {
+  background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+  color: #713f12;
+}
+
+.modern-highlight-dark {
+  background: linear-gradient(135deg, #854d0e 0%, #a16207 100%);
+  color: #fef08a;
+}
+
+/* Strikethrough styles */
+.modern-strikethrough {
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.modern-strikethrough-light {
+  color: #94a3b8;
+  text-decoration-color: #94a3b8;
+}
+
+.modern-strikethrough-dark {
+  color: #64748b;
+  text-decoration-color: #64748b;
+}
+
+/* Code styles */
+.modern-code {
+  display: inline;
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.85em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.modern-code-light {
+  background-color: #f1f5f9;
+  color: #e11d48;
+}
+
+.modern-code-dark {
+  background-color: #334155;
+  color: #fb7185;
+}
+
+/* Link styles */
+.modern-link {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.modern-link-light {
+  color: #2563eb;
+}
+
+.modern-link-dark {
+  color: #60a5fa;
+}
+
+/* Image styles */
+.modern-image-container {
+  margin: 12px 0;
+}
+
+.modern-image,
+.modern-content-image {
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modern-images {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Footer */
+.modern-card-footer {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid;
+}
+
+.modern-card-light .modern-card-footer {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+}
+
+.modern-card-dark .modern-card-footer {
+  border-color: #334155;
+  background: #0f172a;
+}
+
+.modern-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.modern-card-light .modern-footer-brand {
+  color: #64748b;
+}
+
+.modern-card-dark .modern-footer-brand {
+  color: #64748b;
+}
+
+.modern-logo {
+  opacity: 0.7;
+}
+
+.modern-footer-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.modern-card-light .modern-footer-stats {
+  color: #94a3b8;
+}
+
+.modern-card-dark .modern-footer-stats {
+  color: #475569;
+}
+
+.modern-stat-divider {
+  opacity: 0.5;
+}
+
+/* Modern Card Container for html2canvas */
+.modern-card-container {
+  padding: 24px;
+  border-radius: 20px;
+}
+
+.modern-card-container-light {
+  background: linear-gradient(135deg, #f0f4ff 0%, #fdf4ff 50%, #fff1f2 100%);
+}
+
+.modern-card-container-dark {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+}

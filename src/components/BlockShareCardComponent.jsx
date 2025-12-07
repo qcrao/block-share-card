@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button, Menu, MenuItem, Popover, Tooltip } from "@blueprintjs/core";
-import { shareAndDownloadImage } from "../download.js";
+import { Button, Menu, MenuItem, MenuDivider, Popover, Tooltip } from "@blueprintjs/core";
+import { shareAndDownloadImage, shareModernCardImage } from "../download.js";
 
 function BlockShareCardComponent({ extensionAPI }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,22 +10,61 @@ function BlockShareCardComponent({ extensionAPI }) {
 
   const menu = (
     <Menu>
-      <MenuItem
-        icon="mobile-phone"
-        text="Mobile"
-        onClick={() => {
-          shareAndDownloadImage(true, extensionAPI);
-          closePopover();
-        }}
-      />
-      <MenuItem
-        icon="desktop"
-        text="Desktop"
-        onClick={() => {
-          shareAndDownloadImage(false, extensionAPI);
-          closePopover();
-        }}
-      />
+      <MenuItem icon="style" text="Classic">
+        <MenuItem
+          icon="mobile-phone"
+          text="Mobile"
+          onClick={() => {
+            shareAndDownloadImage(true, extensionAPI);
+            closePopover();
+          }}
+        />
+        <MenuItem
+          icon="desktop"
+          text="Desktop"
+          onClick={() => {
+            shareAndDownloadImage(false, extensionAPI);
+            closePopover();
+          }}
+        />
+      </MenuItem>
+      <MenuDivider />
+      <MenuItem icon="clean" text="Modern Light">
+        <MenuItem
+          icon="mobile-phone"
+          text="Mobile"
+          onClick={() => {
+            shareModernCardImage(true, "light", extensionAPI);
+            closePopover();
+          }}
+        />
+        <MenuItem
+          icon="desktop"
+          text="Desktop"
+          onClick={() => {
+            shareModernCardImage(false, "light", extensionAPI);
+            closePopover();
+          }}
+        />
+      </MenuItem>
+      <MenuItem icon="moon" text="Modern Dark">
+        <MenuItem
+          icon="mobile-phone"
+          text="Mobile"
+          onClick={() => {
+            shareModernCardImage(true, "dark", extensionAPI);
+            closePopover();
+          }}
+        />
+        <MenuItem
+          icon="desktop"
+          text="Desktop"
+          onClick={() => {
+            shareModernCardImage(false, "dark", extensionAPI);
+            closePopover();
+          }}
+        />
+      </MenuItem>
     </Menu>
   );
 
