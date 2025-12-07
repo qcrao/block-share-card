@@ -1,16 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Menu, MenuItem } from "@blueprintjs/core";
-import { IconSize } from "@blueprintjs/icons";
 import BlockShareCardComponent from "./components/BlockShareCardComponent";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import { initPanelConfig } from "./panelConfig.js";
 
-console.log("block share card loading");
-
 const rootId = "share-card-root";
 
-function onload({ extensionAPI, ...rest }) {
+function onload({ extensionAPI }) {
   const panelConfig = initPanelConfig(extensionAPI);
   extensionAPI.settings.panel.create(panelConfig);
 
@@ -25,21 +21,24 @@ function onload({ extensionAPI, ...rest }) {
   const searchDiv = document.getElementsByClassName(
     "rm-find-or-create-wrapper"
   )[0];
-  container.insertBefore(blockShareCardContainer, searchDiv.nextSibling);
 
-  console.log("Loaded block share card container");
+  if (container && searchDiv) {
+    container.insertBefore(blockShareCardContainer, searchDiv.nextSibling);
+  } else {
+    console.error("Could not find toolbar elements to insert share card button");
+  }
 }
 
 function onunload() {
   const blockShareCardContainer = document.getElementById(rootId);
 
-  ReactDOM.unmountComponentAtNode(blockShareCardContainer);
-  blockShareCardContainer.remove();
-
-  console.log("Unloaded block share card");
+  if (blockShareCardContainer) {
+    ReactDOM.unmountComponentAtNode(blockShareCardContainer);
+    blockShareCardContainer.remove();
+  }
 }
 
 export default {
-  onload: onload,
-  onunload: onunload,
+  onload,
+  onunload,
 };
