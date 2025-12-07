@@ -16,6 +16,58 @@ let headerRoot = null;
 let footerRoot = null;
 let modernCardRoot = null;
 
+// Loading toast element
+let loadingToast = null;
+
+/**
+ * Show loading toast with progress
+ */
+function showLoadingToast(message = "Generating image...") {
+  hideLoadingToast();
+
+  loadingToast = document.createElement("div");
+  loadingToast.className = "share-card-loading-toast";
+  loadingToast.innerHTML = `
+    <div class="share-card-loading-spinner"></div>
+    <span class="share-card-loading-text">${message}</span>
+  `;
+
+  document.body.appendChild(loadingToast);
+
+  // Trigger animation
+  requestAnimationFrame(() => {
+    loadingToast.classList.add("show");
+  });
+}
+
+/**
+ * Update loading toast message
+ */
+function updateLoadingToast(message) {
+  if (loadingToast) {
+    const textEl = loadingToast.querySelector(".share-card-loading-text");
+    if (textEl) {
+      textEl.textContent = message;
+    }
+  }
+}
+
+/**
+ * Hide loading toast
+ */
+function hideLoadingToast() {
+  if (loadingToast) {
+    loadingToast.classList.remove("show");
+    loadingToast.classList.add("hide");
+    setTimeout(() => {
+      if (loadingToast && loadingToast.parentNode) {
+        loadingToast.parentNode.removeChild(loadingToast);
+      }
+      loadingToast = null;
+    }, 300);
+  }
+}
+
 export function renderFooter(blocksNum, usageDays) {
   const container = document.getElementById("share-card-footer");
   if (!container) {
@@ -248,6 +300,7 @@ export async function shareModernCardImage(isMobile = false, theme = "light", ex
   }
 
   isProcessing = true;
+  showLoadingToast("Preparing...");
 
   try {
     // Parallel API queries for better performance
@@ -281,9 +334,12 @@ export async function shareModernCardImage(isMobile = false, theme = "light", ex
         : currentHighlightBlock.parentElement?.parentElement;
 
       if (!blockContainer) {
+        hideLoadingToast();
         alert("Unable to find block container. Please try again.");
         return;
       }
+
+      updateLoadingToast("Extracting content...");
 
       // Extract content from the block
       const content = extractBlockContent(blockContainer);
@@ -300,6 +356,8 @@ export async function shareModernCardImage(isMobile = false, theme = "light", ex
 
       // Get settings
       const disableShowBlockAndDays = await extensionAPI.settings.get("disable-blocks-info-setting");
+
+      updateLoadingToast("Rendering card...");
 
       // Create a wrapper container for the modern card
       const wrapper = document.createElement("div");
@@ -329,31 +387,38 @@ export async function shareModernCardImage(isMobile = false, theme = "light", ex
         theme
       );
 
-      // Wait for React to render
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Wait for React to render (reduced from 100ms)
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
-      // Capture the card as image
+      updateLoadingToast("Generating image...");
+
+      // Capture the card as image with optimized settings
       const options = {
         logging: false,
-        scale: 3,
+        scale: 2, // Reduced from 3 for better performance
         useCORS: true,
-        letterRendering: true,
-        backgroundColor: null, // Transparent to show gradient background
+        allowTaint: true,
+        backgroundColor: null,
+        removeContainer: false,
       };
 
       const canvas = await html2canvas(wrapper, options);
-      const imageSrc = canvas.toDataURL("image/png", 1);
+      const imageSrc = canvas.toDataURL("image/png", 0.92); // Slightly reduced quality for faster encoding
 
+      updateLoadingToast("Downloading...");
       downloadImage(imageSrc, memo, isMobile);
 
       // Cleanup
       reset();
+      hideLoadingToast();
     } else {
+      hideLoadingToast();
       const shortcut = navigator.platform.includes("Mac") ? "Cmd" : "Ctrl";
       alert(`Please zoom into the block you want to share (${shortcut}+.)`);
     }
   } catch (error) {
     console.error("Modern card share operation failed:", error);
+    hideLoadingToast();
     alert("Failed to generate share image. Please try again.");
     reset();
   } finally {
@@ -369,6 +434,7 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
   }
 
   isProcessing = true;
+  showLoadingToast("Preparing...");
 
   try {
     const existing = document.getElementById("share-card");
@@ -397,7 +463,6 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
       blocksNum = blocksNumResult || 0;
     } catch (queryError) {
       console.error("Failed to query Roam data:", queryError);
-      // Continue with default values
     }
 
     const currentZoomContainer = document.querySelector(
@@ -413,9 +478,12 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
         : currentHighlightBlock.parentElement?.parentElement;
 
       if (!blockContainer) {
+        hideLoadingToast();
         alert("Unable to find block container. Please try again.");
         return;
       }
+
+      updateLoadingToast("Building card...");
 
       blockContainer.classList.add("share-memex-container");
 
@@ -443,15 +511,18 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
       renderHeader(memo, extensionAPI);
       renderFooter(blocksNum, usageDays);
 
+      updateLoadingToast("Generating image...");
       await shareImage(memo, isMobile, extensionAPI);
+      hideLoadingToast();
     } else {
+      hideLoadingToast();
       const shortcut = navigator.platform.includes("Mac") ? "Cmd" : "Ctrl";
       alert(`Please zoom into the block you want to share (${shortcut}+.)`);
     }
   } catch (error) {
     console.error("Share operation failed:", error);
+    hideLoadingToast();
     alert("Failed to generate share image. Please try again.");
-    // Attempt cleanup on error
     reset();
   } finally {
     isProcessing = false;
