@@ -290,18 +290,19 @@
 /* Page Reference [[page]] styles - subtle underline style */
 .modern-page-ref {
   font-weight: 500;
-  border-bottom: 1.5px solid;
-  padding-bottom: 1px;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
 }
 
 .modern-page-ref-light {
   color: #343a41;
-  border-color: rgba(52, 58, 65, 0.4);
+  text-decoration-color: rgba(52, 58, 65, 0.4);
 }
 
 .modern-page-ref-dark {
   color: #9da5b4;
-  border-color: rgba(157, 165, 180, 0.4);
+  text-decoration-color: rgba(157, 165, 180, 0.4);
 }
 
 /* Tag #tag styles */
