@@ -1,8 +1,213 @@
 import { useState, useEffect } from "react";
 
 /**
+ * Get block UID from a block element
+ */
+function getBlockUid(element) {
+  if (!element) return null;
+
+  // Try to get from the block's id attribute (format: block-input-xxx-uid)
+  const blockInput = element.closest(".rm-block__input");
+  if (blockInput?.id) {
+    const match = blockInput.id.match(/block-input-[^-]+-(.+)/);
+    if (match) return match[1];
+  }
+
+  // Try from rm-block-text id
+  const blockText = element.closest(".rm-block-text");
+  if (blockText?.id) {
+    // ID format ends with the 9-char UID
+    return blockText.id.slice(-9);
+  }
+
+  // Try from data-block-uid attribute
+  const blockMain = element.closest("[data-block-uid]");
+  if (blockMain) {
+    return blockMain.getAttribute("data-block-uid");
+  }
+
+  return null;
+}
+
+/**
+ * Get block data from Roam API including children
+ */
+function getBlockWithChildren(uid) {
+  if (!uid || typeof roamAlphaAPI === "undefined") return null;
+
+  try {
+    const result = roamAlphaAPI.q(`
+      [:find (pull ?b [:block/string :block/uid :block/order :block/open
+                       {:block/children [:block/string :block/uid :block/order :block/open
+                         {:block/children [:block/string :block/uid :block/order :block/open
+                           {:block/children [:block/string :block/uid :block/order]}]}]}])
+       :where [?b :block/uid "${uid}"]]
+    `);
+
+    if (result && result[0] && result[0][0]) {
+      return result[0][0];
+    }
+  } catch (e) {
+    console.error("Failed to query block data:", e);
+  }
+
+  return null;
+}
+
+/**
+ * Parse Markdown text to segments
+ */
+function parseMarkdownText(text) {
+  if (!text) return [];
+
+  const segments = [];
+
+  // Regex patterns for different Markdown elements
+  const patterns = [
+    // Code blocks (triple backticks) - must be first
+    { regex: /```(\w*)\n?([\s\S]*?)```/g, type: "codeBlock", extract: (m) => ({ value: m[2], language: m[1] || "" }) },
+    // Inline code
+    { regex: /`([^`]+)`/g, type: "code", extract: (m) => ({ value: m[1] }) },
+    // Bold **text** or __text__
+    { regex: /\*\*([^*]+)\*\*|__([^_]+)__/g, type: "bold", extract: (m) => ({ value: m[1] || m[2] }) },
+    // Italic *text* or _text_
+    { regex: /(?<!\*)\*([^*]+)\*(?!\*)|(?<!_)_([^_]+)_(?!_)/g, type: "italic", extract: (m) => ({ value: m[1] || m[2] }) },
+    // Strikethrough ~~text~~
+    { regex: /~~([^~]+)~~/g, type: "strikethrough", extract: (m) => ({ value: m[1] }) },
+    // Highlight ^^text^^
+    { regex: /\^\^([^^]+)\^\^/g, type: "highlight", extract: (m) => ({ value: m[1] }) },
+    // Page references [[page]]
+    { regex: /\[\[([^\]]+)\]\]/g, type: "pageRef", extract: (m) => ({ value: m[1] }) },
+    // Tags #tag or #[[tag]]
+    { regex: /#(\[\[([^\]]+)\]\]|\w+)/g, type: "tag", extract: (m) => ({ value: "#" + (m[2] || m[1]) }) },
+    // Block references ((uid))
+    { regex: /\(\(([a-zA-Z0-9_-]{9})\)\)/g, type: "blockRef", extract: (m) => ({ value: m[1] }) },
+    // Links [text](url)
+    { regex: /\[([^\]]+)\]\(([^)]+)\)/g, type: "link", extract: (m) => ({ value: m[1], href: m[2] }) },
+    // Images ![alt](url)
+    { regex: /!\[([^\]]*)\]\(([^)]+)\)/g, type: "image", extract: (m) => ({ value: m[2], alt: m[1] }) },
+    // Blockquote > text (at line start)
+    { regex: /^>\s*(.+)$/gm, type: "blockquote", extract: (m) => ({ value: m[1] }) },
+  ];
+
+  // Find all matches with their positions
+  const allMatches = [];
+  for (const pattern of patterns) {
+    let match;
+    const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
+    while ((match = regex.exec(text)) !== null) {
+      allMatches.push({
+        start: match.index,
+        end: match.index + match[0].length,
+        type: pattern.type,
+        ...pattern.extract(match),
+        raw: match[0]
+      });
+    }
+  }
+
+  // Sort by position
+  allMatches.sort((a, b) => a.start - b.start);
+
+  // Remove overlapping matches (keep the first one)
+  const filteredMatches = [];
+  let lastEnd = 0;
+  for (const match of allMatches) {
+    if (match.start >= lastEnd) {
+      filteredMatches.push(match);
+      lastEnd = match.end;
+    }
+  }
+
+  // Build segments
+  let pos = 0;
+  for (const match of filteredMatches) {
+    // Add text before this match
+    if (match.start > pos) {
+      const textBefore = text.slice(pos, match.start);
+      if (textBefore) {
+        segments.push({ type: "text", value: textBefore });
+      }
+    }
+
+    // Add the matched segment
+    segments.push({
+      type: match.type,
+      value: match.value,
+      ...(match.href && { href: match.href }),
+      ...(match.language && { language: match.language }),
+      ...(match.alt && { alt: match.alt }),
+    });
+
+    pos = match.end;
+  }
+
+  // Add remaining text
+  if (pos < text.length) {
+    segments.push({ type: "text", value: text.slice(pos) });
+  }
+
+  // If no matches found, return the whole text as one segment
+  if (segments.length === 0 && text) {
+    segments.push({ type: "text", value: text });
+  }
+
+  return segments;
+}
+
+/**
+ * Process a block and its children recursively, extracting content from API data
+ */
+function processBlockFromApi(block, depth = 0) {
+  const result = [];
+
+  if (!block) return result;
+
+  const text = block[":block/string"] || "";
+  const children = block[":block/children"] || [];
+
+  // Check if this is a code block (starts with ```)
+  const isCodeBlock = text.startsWith("```");
+
+  if (text) {
+    if (isCodeBlock) {
+      // Parse code block
+      const match = text.match(/```(\w*)\n?([\s\S]*?)(?:```)?$/);
+      const language = match ? match[1] : "";
+      const code = match ? match[2] : text.slice(3);
+      result.push({
+        type: depth === 0 ? "main" : "child",
+        depth,
+        content: [{ type: "codeBlock", value: code.trim(), language }]
+      });
+    } else {
+      result.push({
+        type: depth === 0 ? "main" : "child",
+        depth,
+        content: parseMarkdownText(text)
+      });
+    }
+  }
+
+  // Process children regardless of open state (this is the key fix!)
+  if (children.length > 0) {
+    // Sort children by order
+    const sortedChildren = [...children].sort((a, b) =>
+      (a[":block/order"] || 0) - (b[":block/order"] || 0)
+    );
+
+    for (const child of sortedChildren) {
+      result.push(...processBlockFromApi(child, depth + 1));
+    }
+  }
+
+  return result;
+}
+
+/**
  * Extract rich content from a block element, preserving structure
  * Returns an array of content segments with type info
+ * Now uses Roam API to get collapsed children content
  */
 function extractBlockContent(blockContainer) {
   if (!blockContainer) return { segments: [], images: [] };
@@ -10,7 +215,31 @@ function extractBlockContent(blockContainer) {
   const segments = [];
   const images = [];
 
-  // Get all block text elements (including nested children)
+  // Try to get the root block UID
+  const firstBlockText = blockContainer.querySelector(".rm-block-text");
+  const rootUid = getBlockUid(firstBlockText);
+
+  if (rootUid) {
+    // Use Roam API to get all content including collapsed children
+    const blockData = getBlockWithChildren(rootUid);
+
+    if (blockData) {
+      const apiSegments = processBlockFromApi(blockData);
+
+      // Extract images from segments
+      for (const seg of apiSegments) {
+        for (const item of seg.content) {
+          if (item.type === "image") {
+            images.push(item.value);
+          }
+        }
+      }
+
+      return { segments: apiSegments, images };
+    }
+  }
+
+  // Fallback: Get all block text elements from DOM (including nested children)
   const allBlockTexts = blockContainer.querySelectorAll(".rm-block-text");
 
   allBlockTexts.forEach((blockText, index) => {
@@ -18,6 +247,7 @@ function extractBlockContent(blockContainer) {
     if (result.segments.length > 0) {
       segments.push({
         type: index === 0 ? "main" : "child",
+        depth: 0, // DOM fallback doesn't track depth
         content: result.segments
       });
     }
@@ -198,6 +428,27 @@ function processNode(node, segments, images) {
 }
 
 /**
+ * Get resolved text for a block reference
+ */
+function getBlockRefText(uid) {
+  if (!uid || typeof roamAlphaAPI === "undefined") return `((${uid}))`;
+
+  try {
+    const result = roamAlphaAPI.q(`
+      [:find ?s . :where [?b :block/uid "${uid}"] [?b :block/string ?s]]
+    `);
+    if (result) {
+      // Return a simplified version (strip markdown)
+      return result.replace(/\*\*|__|\*|_|~~|\^\^|`/g, "").slice(0, 50) + (result.length > 50 ? "..." : "");
+    }
+  } catch (e) {
+    console.error("Failed to resolve block ref:", e);
+  }
+
+  return `((${uid}))`;
+}
+
+/**
  * Render content segments with proper styling
  */
 function renderSegments(segments, theme) {
@@ -237,6 +488,27 @@ function renderSegments(segments, theme) {
             {seg.value}
           </code>
         );
+      case "codeBlock":
+        return (
+          <pre key={index} className={`modern-code-block modern-code-block-${theme}`}>
+            {seg.language && (
+              <span className="modern-code-language">{seg.language}</span>
+            )}
+            <code>{seg.value}</code>
+          </pre>
+        );
+      case "blockquote":
+        return (
+          <blockquote key={index} className={`modern-blockquote modern-blockquote-${theme}`}>
+            {seg.value}
+          </blockquote>
+        );
+      case "blockRef":
+        return (
+          <span key={index} className={`modern-block-ref modern-block-ref-${theme}`}>
+            {getBlockRefText(seg.value)}
+          </span>
+        );
       case "link":
         return (
           <span key={index} className={`modern-link modern-link-${theme}`}>
@@ -246,7 +518,7 @@ function renderSegments(segments, theme) {
       case "image":
         return (
           <div key={index} className="modern-image-container">
-            <img src={seg.value} alt="" className="modern-image" />
+            <img src={seg.value} alt={seg.alt || ""} className="modern-image" />
           </div>
         );
       case "text":
@@ -285,20 +557,45 @@ function ModernHeader({ username, time, theme }) {
 }
 
 /**
- * Modern Card Content - renders as paragraphs (article style)
+ * Modern Card Content - renders as paragraphs with indentation for nested blocks
  */
-function ModernContent({ segments, images, theme }) {
+function ModernContent({ segments, theme }) {
   if (!segments || segments.length === 0) {
     return <div className="modern-card-content" />;
   }
 
   return (
     <div className="modern-card-content">
-      {segments.map((block, blockIndex) => (
-        <p key={blockIndex} className="modern-paragraph">
-          {renderSegments(block.content, theme)}
-        </p>
-      ))}
+      {segments.map((block, blockIndex) => {
+        const depth = block.depth || 0;
+        const isCodeBlock = block.content.length === 1 && block.content[0].type === "codeBlock";
+
+        // For code blocks, render without paragraph wrapper
+        if (isCodeBlock) {
+          return (
+            <div
+              key={blockIndex}
+              className={`modern-block modern-block-depth-${Math.min(depth, 4)}`}
+              style={{ marginLeft: depth > 0 ? `${depth * 16}px` : 0 }}
+            >
+              {renderSegments(block.content, theme)}
+            </div>
+          );
+        }
+
+        return (
+          <div
+            key={blockIndex}
+            className={`modern-block modern-block-depth-${Math.min(depth, 4)}`}
+            style={{ marginLeft: depth > 0 ? `${depth * 16}px` : 0 }}
+          >
+            {depth > 0 && <span className="modern-bullet">•</span>}
+            <p className="modern-paragraph">
+              {renderSegments(block.content, theme)}
+            </p>
+          </div>
+        );
+      })}
     </div>
   );
 }
