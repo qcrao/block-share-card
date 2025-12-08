@@ -1,4 +1,66 @@
 import { useState, useEffect } from "react";
+import Prism from "prismjs";
+// Import common language support
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-cpp";
+import "prismjs/components/prism-csharp";
+import "prismjs/components/prism-go";
+import "prismjs/components/prism-rust";
+import "prismjs/components/prism-ruby";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-shell-session";
+import "prismjs/components/prism-sql";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-yaml";
+import "prismjs/components/prism-markdown";
+import "prismjs/components/prism-clojure";
+
+/**
+ * Highlight code using Prism.js
+ * Returns HTML string with syntax highlighting
+ */
+function highlightCode(code, language) {
+  if (!code) return "";
+
+  // Map common language aliases
+  const languageMap = {
+    "js": "javascript",
+    "ts": "typescript",
+    "py": "python",
+    "rb": "ruby",
+    "sh": "bash",
+    "shell": "bash",
+    "yml": "yaml",
+    "cs": "csharp",
+    "c++": "cpp",
+    "clj": "clojure",
+  };
+
+  const normalizedLang = languageMap[language?.toLowerCase()] || language?.toLowerCase() || "plaintext";
+
+  // Check if language is supported
+  const grammar = Prism.languages[normalizedLang];
+  if (grammar) {
+    try {
+      return Prism.highlight(code, grammar, normalizedLang);
+    } catch (e) {
+      console.warn("Prism highlight failed:", e);
+    }
+  }
+
+  // Fallback: escape HTML and return as-is
+  return code
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
 /**
  * Get block UID from a block element
@@ -579,15 +641,17 @@ function renderSegments(segments, theme) {
             {seg.value}
           </code>
         );
-      case "codeBlock":
+      case "codeBlock": {
+        const highlightedHtml = highlightCode(seg.value, seg.language);
         return (
           <pre key={index} className={`modern-code-block modern-code-block-${theme}`}>
             {seg.language && (
               <span className="modern-code-language">{seg.language}</span>
             )}
-            <code>{seg.value}</code>
+            <code dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
           </pre>
         );
+      }
       case "blockquote":
         return (
           <blockquote key={index} className={`modern-blockquote modern-blockquote-${theme}`}>
