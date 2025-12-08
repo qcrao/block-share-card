@@ -177,7 +177,7 @@ function createOffscreenWrapper(className, width) {
 async function captureAsImage(element, options = {}) {
   const defaultOptions = {
     logging: false,
-    scale: 2,
+    scale: 3,
     useCORS: true,
     allowTaint: true,
     backgroundColor: null,
