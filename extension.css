@@ -205,7 +205,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+  background: linear-gradient(90deg, #1a1f24 0%, #343a41 50%, #5c6370 100%);
 }
 
 .modern-header-content {
@@ -224,7 +224,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #1a1f24 0%, #343a41 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -295,13 +295,13 @@
 }
 
 .modern-page-ref-light {
-  color: #6366f1;
-  border-color: rgba(99, 102, 241, 0.4);
+  color: #343a41;
+  border-color: rgba(52, 58, 65, 0.4);
 }
 
 .modern-page-ref-dark {
-  color: #a5b4fc;
-  border-color: rgba(165, 180, 252, 0.4);
+  color: #9da5b4;
+  border-color: rgba(157, 165, 180, 0.4);
 }
 
 /* Tag #tag styles */
@@ -310,11 +310,11 @@
 }
 
 .modern-tag-light {
-  color: #8b5cf6;
+  color: #343a41;
 }
 
 .modern-tag-dark {
-  color: #a78bfa;
+  color: #9da5b4;
 }
 
 /* Highlight styles */
@@ -426,9 +426,10 @@
 .modern-footer-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 13px;
   font-weight: 500;
+  line-height: 1;
 }
 
 .modern-card-light .modern-footer-brand {
@@ -439,8 +440,29 @@
   color: #64748b;
 }
 
+.modern-logo-wrapper {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  top: 1px;
+}
+
+.modern-logo-wrapper-light {
+  background-color: #343a41;
+}
+
+.modern-logo-wrapper-dark {
+  background-color: #64748b;
+}
+
 .modern-logo {
-  opacity: 0.7;
+  width: 10px;
+  height: 10px;
 }
 
 .modern-footer-stats {
@@ -470,11 +492,11 @@
 }
 
 .modern-card-container-light {
-  background: linear-gradient(135deg, #f0f4ff 0%, #fdf4ff 50%, #fff1f2 100%);
+  background: linear-gradient(135deg, #f5f6f7 0%, #ebedef 50%, #e8eaec 100%);
 }
 
 .modern-card-container-dark {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+  background: linear-gradient(135deg, #1a1f24 0%, #252a30 50%, #343a41 100%);
 }
 
 /* ==================== Loading Toast Styles ==================== */
