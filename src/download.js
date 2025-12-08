@@ -27,10 +27,7 @@ function showLoadingToast(message = "Generating image...") {
 
   loadingToast = document.createElement("div");
   loadingToast.className = "share-card-loading-toast";
-  loadingToast.innerHTML = `
-    <div class="share-card-loading-spinner"></div>
-    <span class="share-card-loading-text">${message}</span>
-  `;
+  loadingToast.innerHTML = `<div class="share-card-loading-spinner"></div><span class="share-card-loading-text">${message}</span>`;
 
   document.body.appendChild(loadingToast);
 
