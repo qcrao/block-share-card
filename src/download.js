@@ -2,8 +2,7 @@ import { html } from "htm/react";
 import html2canvas from "html2canvas";
 import { queryCurrentActiveBlockUID } from "./api/roamSelect";
 import { queryMinDate, queryNonCodeBlocks } from "./api/roamQueries";
-import { Footer } from "./components/Footer";
-import { Header } from "./components/Header";
+import { ClassicCard } from "./components/ClassicCard";
 import { ModernCard, extractBlockContent } from "./components/ModernCard";
 import { daysBetween } from "./utils/dateUtils";
 import { downloadImage } from "./utils/imageUtils";
@@ -12,9 +11,7 @@ import { downloadImage } from "./utils/imageUtils";
 let isProcessing = false;
 
 // Store React roots for proper cleanup
-let headerRoot = null;
-let footerRoot = null;
-let modernCardRoot = null;
+let cardRoot = null;
 
 // Loading toast element
 let loadingToast = null;
@@ -65,223 +62,136 @@ function hideLoadingToast() {
   }
 }
 
-export function renderFooter(blocksNum, usageDays) {
-  const container = document.getElementById("share-card-footer");
+/**
+ * Render a card component to a container
+ */
+function renderCard(container, CardComponent, props) {
   if (!container) {
-    console.error("Footer container not found");
+    console.error("Card container not found");
     return;
   }
 
   // Use createRoot API (React 18+)
   if (ReactDOM.createRoot) {
-    footerRoot = ReactDOM.createRoot(container);
-    footerRoot.render(
-      html`<${Footer} blocksNum=${blocksNum} usageDays=${usageDays} />`
-    );
+    cardRoot = ReactDOM.createRoot(container);
+    cardRoot.render(html`<${CardComponent} ...${props} />`);
   } else {
     // Fallback for older React versions
-    ReactDOM.render(
-      html`<${Footer} blocksNum=${blocksNum} usageDays=${usageDays} />`,
-      container
-    );
-  }
-}
-
-export function renderHeader(memo, extensionAPI) {
-  const container = document.getElementById("share-card-header");
-  if (!container) {
-    console.error("Header container not found");
-    return;
-  }
-
-  // Use createRoot API (React 18+)
-  if (ReactDOM.createRoot) {
-    headerRoot = ReactDOM.createRoot(container);
-    headerRoot.render(
-      html`<${Header} block=${memo} extensionAPI=${extensionAPI} />`
-    );
-  } else {
-    // Fallback for older React versions
-    ReactDOM.render(
-      html`<${Header} block=${memo} extensionAPI=${extensionAPI} />`,
-      container
-    );
-  }
-}
-
-export function renderModernCard(memo, content, blocksNum, usageDays, showStats, extensionAPI, theme) {
-  const container = document.getElementById("modern-card-root");
-  if (!container) {
-    console.error("Modern card container not found");
-    return;
-  }
-
-  // Use createRoot API (React 18+)
-  if (ReactDOM.createRoot) {
-    modernCardRoot = ReactDOM.createRoot(container);
-    modernCardRoot.render(
-      html`<${ModernCard}
-        block=${memo}
-        content=${content}
-        blocksNum=${blocksNum}
-        usageDays=${usageDays}
-        showStats=${showStats}
-        extensionAPI=${extensionAPI}
-        theme=${theme}
-      />`
-    );
-  } else {
-    // Fallback for older React versions
-    ReactDOM.render(
-      html`<${ModernCard}
-        block=${memo}
-        content=${content}
-        blocksNum=${blocksNum}
-        usageDays=${usageDays}
-        showStats=${showStats}
-        extensionAPI=${extensionAPI}
-        theme=${theme}
-      />`,
-      container
-    );
-  }
-}
-
-export async function shareImage(memo, extensionAPI) {
-  const node = document.querySelector(".share-memex-container");
-  if (!node) {
-    throw new Error("Share container not found");
-  }
-  const originalStyles = node.style.cssText;
-
-  // Cache DOM queries for better performance
-  const headerMemo = node.querySelector("#share-card-header .memo");
-  const footerElement = node.querySelector("#share-card-footer .footer");
-  const roamArticle = document.querySelector(".roam-article");
-
-  // Fetch settings in parallel for better performance
-  const [cardStyle, disableShowBlockAndDays] = await Promise.all([
-    extensionAPI.settings.get("card-style"),
-    extensionAPI.settings.get("disable-blocks-info-setting"),
-  ]);
-
-  // Apply desktop layout styles
-  node.style.setProperty("width", "640px", "important");
-
-  if (headerMemo) {
-    Object.assign(headerMemo.style, {
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexDirection: "initial",
-    });
-  }
-
-  if (footerElement) {
-    Object.assign(footerElement.style, {
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexDirection: "initial",
-      padding: "0 20px 10px",
-    });
-  }
-
-  const timeElement = headerMemo?.querySelector(".time");
-  if (timeElement) {
-    timeElement.style.textAlign = "right";
-  }
-
-  if (roamArticle) {
-    roamArticle.style.color = "#202B33";
-  }
-
-  // Configure html2canvas options
-  const options = {
-    logging: false,
-    scale: 3,
-    useCORS: true,
-    letterRendering: true,
-  };
-
-  // Apply card style
-  if (cardStyle === "Default") {
-    options.backgroundColor = "#FEFCF6";
-    document.documentElement.style.setProperty(
-      "--share-block-card-font-family-base",
-      '"LXGW WenKai", -apple-system, "Microsoft YaHei", "SimSun", sans-serif'
-    );
-  } else {
-    document.documentElement.style.setProperty(
-      "--share-block-card-font-family-base",
-      "inherit"
-    );
-  }
-
-  // Hide stats if disabled
-  if (disableShowBlockAndDays) {
-    const footerStatElement = footerElement?.querySelector(".stat");
-    if (footerStatElement) {
-      footerStatElement.style.display = "none";
-    }
-  }
-
-  const canvas = await html2canvas(node, options);
-  const imageSrc = canvas.toDataURL("image/png", 1);
-
-  downloadImage(imageSrc, memo);
-
-  // Reset styles and cleanup
-  node.style.cssText = originalStyles;
-  reset();
-  return imageSrc;
-}
-
-function reset() {
-  // Unmount React roots before removing elements
-  if (headerRoot) {
-    headerRoot.unmount();
-    headerRoot = null;
-  }
-  if (footerRoot) {
-    footerRoot.unmount();
-    footerRoot = null;
-  }
-  if (modernCardRoot) {
-    modernCardRoot.unmount();
-    modernCardRoot = null;
-  }
-
-  const headerElement = document.querySelector("#share-card-header");
-  if (headerElement) {
-    headerElement.remove();
-  }
-
-  const footerElement = document.querySelector("#share-card-footer");
-  if (footerElement) {
-    footerElement.remove();
-  }
-
-  const shareContainer = document.querySelector(".share-memex-container");
-  if (shareContainer) {
-    shareContainer.classList.remove("share-memex-container");
-  }
-
-  const roamArticle = document.querySelector(".roam-article");
-  if (roamArticle) {
-    roamArticle.style.removeProperty("color");
-  }
-
-  // Clean up modern card elements
-  const modernCardContainer = document.querySelector(".modern-card-wrapper");
-  if (modernCardContainer) {
-    modernCardContainer.remove();
+    ReactDOM.render(html`<${CardComponent} ...${props} />`, container);
   }
 }
 
 /**
- * Generate and download a modern style card image
+ * Clean up rendered card and container
  */
-export async function shareModernCardImage(theme = "light", extensionAPI) {
-  // Prevent concurrent share operations
+function cleanup() {
+  // Unmount React root
+  if (cardRoot) {
+    cardRoot.unmount();
+    cardRoot = null;
+  }
+
+  // Remove card wrapper
+  const cardWrapper = document.querySelector(".share-card-wrapper");
+  if (cardWrapper) {
+    cardWrapper.remove();
+  }
+}
+
+/**
+ * Find the current zoomed block container
+ */
+function findBlockContainer() {
+  const currentZoomContainer = document.querySelector(
+    '[style="margin-left: -20px;"]'
+  );
+  const currentHighlightBlock = document.querySelector(
+    ".roam-toolkit-block-mode--highlight"
+  );
+
+  if (!currentZoomContainer && !currentHighlightBlock) {
+    return { container: null, blockElement: null };
+  }
+
+  const container = currentZoomContainer
+    ? currentZoomContainer
+    : currentHighlightBlock.parentElement?.parentElement;
+
+  const blockElement = currentZoomContainer
+    ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
+    : currentHighlightBlock;
+
+  return { container, blockElement };
+}
+
+/**
+ * Fetch Roam statistics (blocks count and usage days)
+ */
+async function fetchRoamStats() {
+  let usageDays = 0;
+  let blocksNum = 0;
+
+  try {
+    const [minDateResult, blocksNumResult] = await Promise.all([
+      roamAlphaAPI.q(queryMinDate),
+      roamAlphaAPI.q(queryNonCodeBlocks),
+    ]);
+
+    if (minDateResult) {
+      usageDays = daysBetween(new Date(), new Date(minDateResult));
+    }
+    blocksNum = blocksNumResult || 0;
+  } catch (queryError) {
+    console.error("Failed to query Roam data:", queryError);
+  }
+
+  return { usageDays, blocksNum };
+}
+
+/**
+ * Create an off-screen wrapper for rendering and capturing the card
+ */
+function createOffscreenWrapper(className, width) {
+  const wrapper = document.createElement("div");
+  wrapper.className = `share-card-wrapper ${className}`;
+  wrapper.style.cssText = `
+    position: fixed;
+    top: -9999px;
+    left: -9999px;
+    width: ${width}px;
+    z-index: -1;
+  `;
+
+  const root = document.createElement("div");
+  root.id = "share-card-root";
+  wrapper.appendChild(root);
+
+  document.body.appendChild(wrapper);
+
+  return { wrapper, root };
+}
+
+/**
+ * Capture a DOM element as an image
+ */
+async function captureAsImage(element, options = {}) {
+  const defaultOptions = {
+    logging: false,
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: null,
+    removeContainer: false,
+  };
+
+  const canvas = await html2canvas(element, { ...defaultOptions, ...options });
+  return canvas.toDataURL("image/png", 0.92);
+}
+
+/**
+ * Generate and download a Classic style card image
+ */
+export async function shareAndDownloadImage(extensionAPI) {
   if (isProcessing) {
     console.warn("Share operation already in progress");
     return;
@@ -291,131 +201,75 @@ export async function shareModernCardImage(theme = "light", extensionAPI) {
   showLoadingToast("Preparing...");
 
   try {
-    // Parallel API queries for better performance
-    let usageDays = 0;
-    let blocksNum = 0;
+    const { container, blockElement } = findBlockContainer();
 
-    try {
-      const [minDateResult, blocksNumResult] = await Promise.all([
-        roamAlphaAPI.q(queryMinDate),
-        roamAlphaAPI.q(queryNonCodeBlocks),
-      ]);
-
-      if (minDateResult) {
-        usageDays = daysBetween(new Date(), new Date(minDateResult));
-      }
-      blocksNum = blocksNumResult || 0;
-    } catch (queryError) {
-      console.error("Failed to query Roam data:", queryError);
-    }
-
-    const currentZoomContainer = document.querySelector(
-      '[style="margin-left: -20px;"]'
-    );
-    const currentHighlightBlock = document.querySelector(
-      ".roam-toolkit-block-mode--highlight"
-    );
-
-    if (currentZoomContainer || currentHighlightBlock) {
-      const blockContainer = currentZoomContainer
-        ? currentZoomContainer
-        : currentHighlightBlock.parentElement?.parentElement;
-
-      if (!blockContainer) {
-        hideLoadingToast();
-        alert("Unable to find block container. Please try again.");
-        return;
-      }
-
-      updateLoadingToast("Extracting content...");
-
-      // Extract content from the block
-      const content = extractBlockContent(blockContainer);
-
-      // Get block metadata
-      const activeBlock = queryCurrentActiveBlockUID(
-        currentZoomContainer
-          ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
-          : currentHighlightBlock,
-        blockContainer
-      );
-
-      const memo = { ...activeBlock };
-
-      // Get settings
-      const disableShowBlockAndDays = await extensionAPI.settings.get("disable-blocks-info-setting");
-
-      updateLoadingToast("Rendering card...");
-
-      // Create a wrapper container for the modern card
-      const wrapper = document.createElement("div");
-      wrapper.className = `modern-card-wrapper modern-card-container modern-card-container-${theme}`;
-      wrapper.style.cssText = `
-        position: fixed;
-        top: -9999px;
-        left: -9999px;
-        width: 480px;
-        z-index: -1;
-      `;
-
-      const cardRoot = document.createElement("div");
-      cardRoot.id = "modern-card-root";
-      wrapper.appendChild(cardRoot);
-
-      document.body.appendChild(wrapper);
-
-      // Render the modern card
-      renderModernCard(
-        memo,
-        content,
-        blocksNum,
-        usageDays,
-        !disableShowBlockAndDays,
-        extensionAPI,
-        theme
-      );
-
-      // Wait for React to render (reduced from 100ms)
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
-      updateLoadingToast("Generating image...");
-
-      // Capture the card as image with optimized settings
-      const options = {
-        logging: false,
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: null,
-        removeContainer: false,
-      };
-
-      const canvas = await html2canvas(wrapper, options);
-      const imageSrc = canvas.toDataURL("image/png", 0.92);
-
-      updateLoadingToast("Downloading...");
-      downloadImage(imageSrc, memo);
-
-      // Cleanup
-      reset();
-      hideLoadingToast();
-    } else {
+    if (!container) {
       hideLoadingToast();
       const shortcut = navigator.platform.includes("Mac") ? "Cmd" : "Ctrl";
       alert(`Please zoom into the block you want to share (${shortcut}+.)`);
+      return;
     }
+
+    updateLoadingToast("Extracting content...");
+
+    // Fetch stats and settings in parallel
+    const [{ usageDays, blocksNum }, cardStyle, disableShowBlockAndDays] = await Promise.all([
+      fetchRoamStats(),
+      extensionAPI.settings.get("card-style"),
+      extensionAPI.settings.get("disable-blocks-info-setting"),
+    ]);
+
+    // Extract content from the block
+    const content = extractBlockContent(container);
+
+    // Get block metadata
+    const activeBlock = queryCurrentActiveBlockUID(blockElement, container);
+    const memo = { ...activeBlock };
+
+    updateLoadingToast("Rendering card...");
+
+    // Create off-screen wrapper
+    const { wrapper, root } = createOffscreenWrapper("classic-card-container", 640);
+
+    // Render the classic card
+    renderCard(root, ClassicCard, {
+      block: memo,
+      content,
+      blocksNum,
+      usageDays,
+      showStats: !disableShowBlockAndDays,
+      extensionAPI,
+      cardStyle: cardStyle || "Default",
+    });
+
+    // Wait for React to render
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    updateLoadingToast("Generating image...");
+
+    // Capture the card as image
+    const imageSrc = await captureAsImage(wrapper);
+
+    updateLoadingToast("Downloading...");
+    downloadImage(imageSrc, memo);
+
+    // Cleanup
+    cleanup();
+    hideLoadingToast();
   } catch (error) {
-    console.error("Modern card share operation failed:", error);
+    console.error("Classic card share operation failed:", error);
     hideLoadingToast();
     alert("Failed to generate share image. Please try again.");
-    reset();
+    cleanup();
   } finally {
     isProcessing = false;
   }
 }
 
-export async function shareAndDownloadImage(extensionAPI) {
-  // Prevent concurrent share operations
+/**
+ * Generate and download a Modern style card image
+ */
+export async function shareModernCardImage(theme = "light", extensionAPI) {
   if (isProcessing) {
     console.warn("Share operation already in progress");
     return;
@@ -425,93 +279,68 @@ export async function shareAndDownloadImage(extensionAPI) {
   showLoadingToast("Preparing...");
 
   try {
-    const existing = document.getElementById("share-card");
-    if (!existing) {
-      const portal = document.querySelector(".bp3-portal");
-      if (portal) {
-        const element = document.createElement("div");
-        element.id = "share-card";
-        portal.appendChild(element);
-      }
-    }
+    const { container, blockElement } = findBlockContainer();
 
-    // Parallel API queries for better performance
-    let usageDays = 0;
-    let blocksNum = 0;
-
-    try {
-      const [minDateResult, blocksNumResult] = await Promise.all([
-        roamAlphaAPI.q(queryMinDate),
-        roamAlphaAPI.q(queryNonCodeBlocks),
-      ]);
-
-      if (minDateResult) {
-        usageDays = daysBetween(new Date(), new Date(minDateResult));
-      }
-      blocksNum = blocksNumResult || 0;
-    } catch (queryError) {
-      console.error("Failed to query Roam data:", queryError);
-    }
-
-    const currentZoomContainer = document.querySelector(
-      '[style="margin-left: -20px;"]'
-    );
-    const currentHighlightBlock = document.querySelector(
-      ".roam-toolkit-block-mode--highlight"
-    );
-
-    if (currentZoomContainer || currentHighlightBlock) {
-      const blockContainer = currentZoomContainer
-        ? currentZoomContainer
-        : currentHighlightBlock.parentElement?.parentElement;
-
-      if (!blockContainer) {
-        hideLoadingToast();
-        alert("Unable to find block container. Please try again.");
-        return;
-      }
-
-      updateLoadingToast("Building card...");
-
-      blockContainer.classList.add("share-memex-container");
-
-      const header = document.createElement("div");
-      header.id = "share-card-header";
-      blockContainer.prepend(header);
-
-      const doubleLine = document.createElement("div");
-      doubleLine.className = "double-line";
-      header.after(doubleLine);
-
-      const footer = document.createElement("div");
-      footer.id = "share-card-footer";
-      blockContainer.appendChild(footer);
-
-      const activeBlock = queryCurrentActiveBlockUID(
-        currentZoomContainer
-          ? currentZoomContainer.querySelector(".rm-block__self .rm-block-text")
-          : currentHighlightBlock,
-        blockContainer
-      );
-
-      const memo = { ...activeBlock };
-
-      renderHeader(memo, extensionAPI);
-      renderFooter(blocksNum, usageDays);
-
-      updateLoadingToast("Generating image...");
-      await shareImage(memo, extensionAPI);
-      hideLoadingToast();
-    } else {
+    if (!container) {
       hideLoadingToast();
       const shortcut = navigator.platform.includes("Mac") ? "Cmd" : "Ctrl";
       alert(`Please zoom into the block you want to share (${shortcut}+.)`);
+      return;
     }
+
+    updateLoadingToast("Extracting content...");
+
+    // Fetch stats and settings in parallel
+    const [{ usageDays, blocksNum }, disableShowBlockAndDays] = await Promise.all([
+      fetchRoamStats(),
+      extensionAPI.settings.get("disable-blocks-info-setting"),
+    ]);
+
+    // Extract content from the block
+    const content = extractBlockContent(container);
+
+    // Get block metadata
+    const activeBlock = queryCurrentActiveBlockUID(blockElement, container);
+    const memo = { ...activeBlock };
+
+    updateLoadingToast("Rendering card...");
+
+    // Create off-screen wrapper
+    const { wrapper, root } = createOffscreenWrapper(
+      `modern-card-container modern-card-container-${theme}`,
+      480
+    );
+
+    // Render the modern card
+    renderCard(root, ModernCard, {
+      block: memo,
+      content,
+      blocksNum,
+      usageDays,
+      showStats: !disableShowBlockAndDays,
+      extensionAPI,
+      theme,
+    });
+
+    // Wait for React to render
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    updateLoadingToast("Generating image...");
+
+    // Capture the card as image
+    const imageSrc = await captureAsImage(wrapper);
+
+    updateLoadingToast("Downloading...");
+    downloadImage(imageSrc, memo);
+
+    // Cleanup
+    cleanup();
+    hideLoadingToast();
   } catch (error) {
-    console.error("Share operation failed:", error);
+    console.error("Modern card share operation failed:", error);
     hideLoadingToast();
     alert("Failed to generate share image. Please try again.");
-    reset();
+    cleanup();
   } finally {
     isProcessing = false;
   }
