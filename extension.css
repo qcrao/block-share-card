@@ -521,16 +521,22 @@
 
 /* Code block styles (multi-line) */
 .modern-code-block {
-  font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Consolas", monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  padding: 16px;
-  border-radius: 8px;
+  font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Consolas", "Monaco", monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  padding: 20px;
+  padding-top: 36px;
+  border-radius: 12px;
   overflow-x: auto;
-  margin: 8px 0;
+  margin: 12px 0;
   position: relative;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .modern-code-block code {
@@ -539,36 +545,59 @@
   background: none;
   padding: 0;
   border-radius: 0;
+  display: block;
+  tab-size: 2;
+  -moz-tab-size: 2;
 }
 
 .modern-code-block-light {
-  background-color: #f8fafc;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
   border: 1px solid #e2e8f0;
-  color: #334155;
+  color: #1e293b;
 }
 
 .modern-code-block-dark {
-  background-color: #1e293b;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
   border: 1px solid #334155;
   color: #e2e8f0;
 }
 
+/* Language badge */
 .modern-code-language {
   position: absolute;
-  top: 8px;
+  top: 10px;
   right: 12px;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
 .modern-code-block-light .modern-code-language {
-  color: #94a3b8;
+  color: #64748b;
+  background-color: rgba(100, 116, 139, 0.1);
 }
 
 .modern-code-block-dark .modern-code-language {
-  color: #64748b;
+  color: #94a3b8;
+  background-color: rgba(148, 163, 184, 0.15);
+}
+
+/* Window controls decoration */
+.modern-code-block::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  box-shadow:
+    16px 0 0 #f59e0b,
+    32px 0 0 #22c55e;
 }
 
 /* Blockquote styles */

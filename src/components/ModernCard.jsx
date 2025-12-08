@@ -2,45 +2,64 @@ import { useState, useEffect } from "react";
 
 /**
  * Get block UID from a block element
+ * Roam block UIDs are 9 characters, e.g., "LAk4T_1oa"
  */
 function getBlockUid(element) {
   if (!element) return null;
 
-  // Try to get from the block's id attribute (format: block-input-xxx-uid)
+  // Try from data-block-uid attribute first (most reliable)
+  const blockMain = element.closest("[data-block-uid]");
+  if (blockMain) {
+    const uid = blockMain.getAttribute("data-block-uid");
+    console.log("[ShareCard] getBlockUid from data-block-uid:", uid);
+    return uid;
+  }
+
+  // Try to get from the block's id attribute
+  // Format: block-input-{graphId}-body-outline-{uid} or block-input-{graphId}-{uid}
   const blockInput = element.closest(".rm-block__input");
   if (blockInput?.id) {
-    const match = blockInput.id.match(/block-input-[^-]+-(.+)/);
-    if (match) return match[1];
+    console.log("[ShareCard] getBlockUid blockInput.id:", blockInput.id);
+    // The UID is the last 9 characters
+    const uid = blockInput.id.slice(-9);
+    // Verify it looks like a valid UID (alphanumeric with _ and -)
+    if (/^[a-zA-Z0-9_-]{9}$/.test(uid)) {
+      console.log("[ShareCard] getBlockUid extracted UID:", uid);
+      return uid;
+    }
   }
 
   // Try from rm-block-text id
   const blockText = element.closest(".rm-block-text");
   if (blockText?.id) {
+    console.log("[ShareCard] getBlockUid blockText.id:", blockText.id);
     // ID format ends with the 9-char UID
-    return blockText.id.slice(-9);
+    const uid = blockText.id.slice(-9);
+    if (/^[a-zA-Z0-9_-]{9}$/.test(uid)) {
+      console.log("[ShareCard] getBlockUid extracted UID from blockText:", uid);
+      return uid;
+    }
   }
 
-  // Try from data-block-uid attribute
-  const blockMain = element.closest("[data-block-uid]");
-  if (blockMain) {
-    return blockMain.getAttribute("data-block-uid");
-  }
-
+  console.log("[ShareCard] getBlockUid: no UID found");
   return null;
 }
 
 /**
- * Get block data from Roam API including children
+ * Get block data from Roam API including children (recursive)
  */
 function getBlockWithChildren(uid) {
   if (!uid || typeof roamAlphaAPI === "undefined") return null;
 
   try {
+    // Use q query which is more reliable
     const result = roamAlphaAPI.q(`
       [:find (pull ?b [:block/string :block/uid :block/order :block/open
                        {:block/children [:block/string :block/uid :block/order :block/open
                          {:block/children [:block/string :block/uid :block/order :block/open
-                           {:block/children [:block/string :block/uid :block/order]}]}]}])
+                           {:block/children [:block/string :block/uid :block/order :block/open
+                             {:block/children [:block/string :block/uid :block/order :block/open
+                               {:block/children [:block/string :block/uid :block/order]}]}]}]}]}])
        :where [?b :block/uid "${uid}"]]
     `);
 
@@ -161,24 +180,55 @@ function parseMarkdownText(text) {
 function processBlockFromApi(block, depth = 0) {
   const result = [];
 
-  if (!block) return result;
+  if (!block) {
+    console.log("[ShareCard] processBlockFromApi: block is null");
+    return result;
+  }
 
-  const text = block[":block/string"] || "";
-  const children = block[":block/children"] || [];
+  // Handle both Clojure-style keys (:block/string) and JS-style keys (string)
+  const text = block[":block/string"] || block["string"] || "";
+  const children = block[":block/children"] || block["children"] || [];
+
+  console.log("[ShareCard] processBlockFromApi depth:", depth, "text:", text.substring(0, 100), "children:", children.length);
 
   // Check if this is a code block (starts with ```)
-  const isCodeBlock = text.startsWith("```");
+  const isCodeBlock = typeof text === "string" && text.startsWith("```");
+  console.log("[ShareCard] isCodeBlock:", isCodeBlock);
 
-  if (text) {
+  if (text && typeof text === "string") {
     if (isCodeBlock) {
-      // Parse code block
-      const match = text.match(/```(\w*)\n?([\s\S]*?)(?:```)?$/);
-      const language = match ? match[1] : "";
-      const code = match ? match[2] : text.slice(3);
+      // Parse code block - extract language and code content
+      const lines = text.split("\n");
+      const firstLine = lines[0] || "";
+      // Extract language from first line (```go, ```javascript, etc.)
+      const langMatch = firstLine.match(/^```(\w*)/);
+      const language = langMatch ? langMatch[1] : "";
+
+      console.log("[ShareCard] Code block detected, language:", language, "lines count:", lines.length);
+
+      // Get code content (everything after first line, excluding trailing ```)
+      let codeLines = lines.slice(1);
+      // Remove trailing ``` line if present (check multiple formats)
+      while (codeLines.length > 0) {
+        const lastLine = codeLines[codeLines.length - 1];
+        if (lastLine.trim() === "```" || lastLine.trim() === "") {
+          codeLines = codeLines.slice(0, -1);
+        } else if (lastLine.endsWith("```")) {
+          // Handle case where ``` is at the end of the last code line
+          codeLines[codeLines.length - 1] = lastLine.slice(0, -3);
+          break;
+        } else {
+          break;
+        }
+      }
+      const code = codeLines.join("\n");
+
+      console.log("[ShareCard] Extracted code:", code.substring(0, 200));
+
       result.push({
         type: depth === 0 ? "main" : "child",
         depth,
-        content: [{ type: "codeBlock", value: code.trim(), language }]
+        content: [{ type: "codeBlock", value: code, language }]
       });
     } else {
       result.push({
@@ -207,24 +257,38 @@ function processBlockFromApi(block, depth = 0) {
 /**
  * Extract rich content from a block element, preserving structure
  * Returns an array of content segments with type info
- * Now uses Roam API to get collapsed children content
+ *
+ * Strategy: Always use Roam API as the primary source for content extraction.
+ * This ensures we get the raw markdown text which is much easier to parse correctly,
+ * especially for code blocks which have complex DOM structures in CodeMirror.
  */
 function extractBlockContent(blockContainer) {
-  if (!blockContainer) return { segments: [], images: [] };
+  console.log("[ShareCard] extractBlockContent called", blockContainer);
+
+  if (!blockContainer) {
+    console.log("[ShareCard] blockContainer is null");
+    return { segments: [], images: [] };
+  }
 
   const segments = [];
   const images = [];
 
   // Try to get the root block UID
   const firstBlockText = blockContainer.querySelector(".rm-block-text");
-  const rootUid = getBlockUid(firstBlockText);
+  console.log("[ShareCard] firstBlockText:", firstBlockText);
 
-  if (rootUid) {
-    // Use Roam API to get all content including collapsed children
+  const rootUid = getBlockUid(firstBlockText) || getBlockUid(blockContainer);
+  console.log("[ShareCard] rootUid:", rootUid);
+
+  if (rootUid && typeof roamAlphaAPI !== "undefined") {
+    // Use Roam API to get block data (most reliable method)
+    console.log("[ShareCard] Calling getBlockWithChildren...");
     const blockData = getBlockWithChildren(rootUid);
+    console.log("[ShareCard] blockData:", JSON.stringify(blockData, null, 2));
 
     if (blockData) {
       const apiSegments = processBlockFromApi(blockData);
+      console.log("[ShareCard] apiSegments:", JSON.stringify(apiSegments, null, 2));
 
       // Extract images from segments
       for (const seg of apiSegments) {
@@ -235,30 +299,39 @@ function extractBlockContent(blockContainer) {
         }
       }
 
-      return { segments: apiSegments, images };
+      if (apiSegments.length > 0) {
+        console.log("[ShareCard] Returning API segments, count:", apiSegments.length);
+        return { segments: apiSegments, images };
+      }
     }
+  } else {
+    console.log("[ShareCard] API not available or no rootUid. roamAlphaAPI defined:", typeof roamAlphaAPI !== "undefined");
   }
 
-  // Fallback: Get all block text elements from DOM (including nested children)
+  // Fallback: Extract from DOM if API fails
+  console.log("[ShareCard] Falling back to DOM extraction");
   const allBlockTexts = blockContainer.querySelectorAll(".rm-block-text");
+  console.log("[ShareCard] Found block texts:", allBlockTexts.length);
 
   allBlockTexts.forEach((blockText, index) => {
     const result = extractContentFromElement(blockText);
     if (result.segments.length > 0) {
       segments.push({
         type: index === 0 ? "main" : "child",
-        depth: 0, // DOM fallback doesn't track depth
+        depth: 0,
         content: result.segments
       });
     }
     images.push(...result.images);
   });
 
+  console.log("[ShareCard] Final segments:", JSON.stringify(segments, null, 2));
   return { segments, images };
 }
 
 /**
  * Extract content from an element, preserving rich formatting
+ * This is a fallback when API extraction fails
  * Filters out plugin elements like copy buttons
  */
 function extractContentFromElement(element) {
@@ -267,11 +340,17 @@ function extractContentFromElement(element) {
   const segments = [];
   const images = [];
 
+  // Skip code blocks entirely - they should be handled by API
+  const classStr = typeof element.className === "string" ? element.className : "";
+  if (classStr.includes("rm-code-block") || classStr.includes("CodeMirror")) {
+    return { segments, images };
+  }
+
   // Clone the element to avoid modifying the original
   const clone = element.cloneNode(true);
 
-  // Remove plugin elements (copy buttons, tooltips, etc.)
-  const pluginSelectors = [
+  // Remove plugin elements and code blocks (copy buttons, tooltips, etc.)
+  const removeSelectors = [
     ".bp3-popover-wrapper",      // Blueprint popovers (copy buttons etc.)
     ".bp3-popover-target",
     ".bp3-tooltip-indicator",
@@ -286,9 +365,11 @@ function extractContentFromElement(element) {
     "svg",                       // SVG icons
     ".bp3-icon",                 // Blueprint icons
     ".rm-block-ref__delete",     // Delete buttons
+    ".rm-code-block",            // Code blocks (handled by API)
+    ".CodeMirror",               // CodeMirror editors
   ];
 
-  pluginSelectors.forEach(selector => {
+  removeSelectors.forEach(selector => {
     try {
       clone.querySelectorAll(selector).forEach(el => el.remove());
     } catch (e) {
@@ -304,6 +385,7 @@ function extractContentFromElement(element) {
 
 /**
  * Recursively process DOM nodes to extract content
+ * This is a fallback for when API extraction fails
  */
 function processNode(node, segments, images) {
   if (!node) return;
@@ -328,8 +410,13 @@ function processNode(node, segments, images) {
         return;
       }
 
-      // Skip SVG and icon elements
+      // Skip SVG, icon elements, and code blocks
       if (tagName === "svg" || classStr.includes("bp3-icon")) {
+        return;
+      }
+
+      // Skip code blocks entirely - they should be handled by API
+      if (classStr.includes("rm-code-block") || classStr.includes("CodeMirror")) {
         return;
       }
 
@@ -402,8 +489,8 @@ function processNode(node, segments, images) {
         return;
       }
 
-      // Handle code
-      if (tagName === "code" || classStr.includes("rm-code")) {
+      // Handle inline code (not code blocks)
+      if ((tagName === "code" || classStr.includes("rm-code")) && !classStr.includes("rm-code-block")) {
         const text = child.textContent;
         if (text) {
           segments.push({ type: "code", value: text });
@@ -557,7 +644,7 @@ function ModernHeader({ username, time, theme }) {
 }
 
 /**
- * Modern Card Content - renders as paragraphs with indentation for nested blocks
+ * Modern Card Content - renders all blocks at the same level without bullets
  */
 function ModernContent({ segments, theme }) {
   if (!segments || segments.length === 0) {
@@ -567,29 +654,19 @@ function ModernContent({ segments, theme }) {
   return (
     <div className="modern-card-content">
       {segments.map((block, blockIndex) => {
-        const depth = block.depth || 0;
         const isCodeBlock = block.content.length === 1 && block.content[0].type === "codeBlock";
 
         // For code blocks, render without paragraph wrapper
         if (isCodeBlock) {
           return (
-            <div
-              key={blockIndex}
-              className={`modern-block modern-block-depth-${Math.min(depth, 4)}`}
-              style={{ marginLeft: depth > 0 ? `${depth * 16}px` : 0 }}
-            >
+            <div key={blockIndex} className="modern-block">
               {renderSegments(block.content, theme)}
             </div>
           );
         }
 
         return (
-          <div
-            key={blockIndex}
-            className={`modern-block modern-block-depth-${Math.min(depth, 4)}`}
-            style={{ marginLeft: depth > 0 ? `${depth * 16}px` : 0 }}
-          >
-            {depth > 0 && <span className="modern-bullet">•</span>}
+          <div key={blockIndex} className="modern-block">
             <p className="modern-paragraph">
               {renderSegments(block.content, theme)}
             </p>
