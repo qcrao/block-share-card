@@ -147,7 +147,7 @@ export function renderModernCard(memo, content, blocksNum, usageDays, showStats,
   }
 }
 
-export async function shareImage(memo, isMobile, extensionAPI) {
+export async function shareImage(memo, extensionAPI) {
   const node = document.querySelector(".share-memex-container");
   if (!node) {
     throw new Error("Share container not found");
@@ -165,38 +165,29 @@ export async function shareImage(memo, isMobile, extensionAPI) {
     extensionAPI.settings.get("disable-blocks-info-setting"),
   ]);
 
-  // Apply layout styles based on mobile/desktop mode
-  if (isMobile) {
-    node.style.setProperty("width", "320px", "important");
+  // Apply desktop layout styles
+  node.style.setProperty("width", "640px", "important");
 
-    const authorElement = headerMemo?.querySelector(".author");
-    if (authorElement) {
-      authorElement.style.setProperty("width", "100%", "important");
-    }
-  } else {
-    node.style.setProperty("width", "640px", "important");
+  if (headerMemo) {
+    Object.assign(headerMemo.style, {
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexDirection: "initial",
+    });
+  }
 
-    if (headerMemo) {
-      Object.assign(headerMemo.style, {
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexDirection: "initial",
-      });
-    }
+  if (footerElement) {
+    Object.assign(footerElement.style, {
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexDirection: "initial",
+      padding: "0 20px 10px",
+    });
+  }
 
-    if (footerElement) {
-      Object.assign(footerElement.style, {
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexDirection: "initial",
-        padding: "0 20px 10px",
-      });
-    }
-
-    const timeElement = headerMemo?.querySelector(".time");
-    if (timeElement) {
-      timeElement.style.textAlign = "right";
-    }
+  const timeElement = headerMemo?.querySelector(".time");
+  if (timeElement) {
+    timeElement.style.textAlign = "right";
   }
 
   if (roamArticle) {
@@ -236,7 +227,7 @@ export async function shareImage(memo, isMobile, extensionAPI) {
   const canvas = await html2canvas(node, options);
   const imageSrc = canvas.toDataURL("image/png", 1);
 
-  downloadImage(imageSrc, memo, isMobile);
+  downloadImage(imageSrc, memo);
 
   // Reset styles and cleanup
   node.style.cssText = originalStyles;
@@ -289,7 +280,7 @@ function reset() {
 /**
  * Generate and download a modern style card image
  */
-export async function shareModernCardImage(isMobile = false, theme = "light", extensionAPI) {
+export async function shareModernCardImage(theme = "light", extensionAPI) {
   // Prevent concurrent share operations
   if (isProcessing) {
     console.warn("Share operation already in progress");
@@ -363,7 +354,7 @@ export async function shareModernCardImage(isMobile = false, theme = "light", ex
         position: fixed;
         top: -9999px;
         left: -9999px;
-        width: ${isMobile ? "320px" : "480px"};
+        width: 480px;
         z-index: -1;
       `;
 
@@ -392,7 +383,7 @@ export async function shareModernCardImage(isMobile = false, theme = "light", ex
       // Capture the card as image with optimized settings
       const options = {
         logging: false,
-        scale: 2, // Reduced from 3 for better performance
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: null,
@@ -400,10 +391,10 @@ export async function shareModernCardImage(isMobile = false, theme = "light", ex
       };
 
       const canvas = await html2canvas(wrapper, options);
-      const imageSrc = canvas.toDataURL("image/png", 0.92); // Slightly reduced quality for faster encoding
+      const imageSrc = canvas.toDataURL("image/png", 0.92);
 
       updateLoadingToast("Downloading...");
-      downloadImage(imageSrc, memo, isMobile);
+      downloadImage(imageSrc, memo);
 
       // Cleanup
       reset();
@@ -423,7 +414,7 @@ export async function shareModernCardImage(isMobile = false, theme = "light", ex
   }
 }
 
-export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
+export async function shareAndDownloadImage(extensionAPI) {
   // Prevent concurrent share operations
   if (isProcessing) {
     console.warn("Share operation already in progress");
@@ -509,7 +500,7 @@ export async function shareAndDownloadImage(isMobile = false, extensionAPI) {
       renderFooter(blocksNum, usageDays);
 
       updateLoadingToast("Generating image...");
-      await shareImage(memo, isMobile, extensionAPI);
+      await shareImage(memo, extensionAPI);
       hideLoadingToast();
     } else {
       hideLoadingToast();
