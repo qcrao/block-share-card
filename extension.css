@@ -287,22 +287,25 @@
   margin-bottom: 0;
 }
 
-/* Page Reference [[page]] styles - subtle underline style */
+/* Page Reference [[page]] styles - capsule style */
 .modern-page-ref {
   font-weight: 500;
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 2px;
+  padding: 1px 8px 2px;
+  border-radius: 12px;
+  border: 1px solid;
+  font-size: 0.9em;
 }
 
 .modern-page-ref-light {
   color: #343a41;
-  text-decoration-color: rgba(52, 58, 65, 0.4);
+  background-color: rgba(52, 58, 65, 0.06);
+  border-color: rgba(52, 58, 65, 0.2);
 }
 
 .modern-page-ref-dark {
   color: #9da5b4;
-  text-decoration-color: rgba(157, 165, 180, 0.4);
+  background-color: rgba(157, 165, 180, 0.1);
+  border-color: rgba(157, 165, 180, 0.25);
 }
 
 /* Tag #tag styles */
