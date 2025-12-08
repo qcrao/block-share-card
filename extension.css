@@ -621,7 +621,7 @@
   color: #94a3b8;
 }
 
-/* Block reference styles */
+/* Block reference styles (inline fallback) */
 .modern-block-ref {
   padding: 2px 6px;
   border-radius: 4px;
@@ -635,6 +635,28 @@
 
 .modern-block-ref-dark {
   background-color: #334155;
+  color: #94a3b8;
+}
+
+/* Block reference container (full content) */
+.modern-block-ref-container {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 3px solid;
+  font-size: 0.95em;
+  line-height: 1.6;
+}
+
+.modern-block-ref-container-light {
+  background-color: rgba(241, 245, 249, 0.6);
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.modern-block-ref-container-dark {
+  background-color: rgba(51, 65, 85, 0.4);
+  border-color: #475569;
   color: #94a3b8;
 }
 

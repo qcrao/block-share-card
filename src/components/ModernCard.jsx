@@ -515,24 +515,28 @@ function processNode(node, segments, images) {
 }
 
 /**
- * Get resolved text for a block reference
+ * Get full content for a block reference (without children)
+ * Returns the raw text and parsed segments
  */
-function getBlockRefText(uid) {
-  if (!uid || typeof roamAlphaAPI === "undefined") return `((${uid}))`;
+function getBlockRefContent(uid) {
+  if (!uid || typeof roamAlphaAPI === "undefined") {
+    return { text: `((${uid}))`, segments: null };
+  }
 
   try {
     const result = roamAlphaAPI.q(`
       [:find ?s . :where [?b :block/uid "${uid}"] [?b :block/string ?s]]
     `);
-    if (result) {
-      // Return a simplified version (strip markdown)
-      return result.replace(/\*\*|__|\*|_|~~|\^\^|`/g, "").slice(0, 50) + (result.length > 50 ? "..." : "");
+    if (result && typeof result === "string") {
+      // Parse the content to get segments
+      const segments = parseMarkdownText(result);
+      return { text: result, segments };
     }
   } catch (e) {
     console.error("Failed to resolve block ref:", e);
   }
 
-  return `((${uid}))`;
+  return { text: `((${uid}))`, segments: null };
 }
 
 /**
@@ -590,12 +594,23 @@ function renderSegments(segments, theme) {
             {seg.value}
           </blockquote>
         );
-      case "blockRef":
+      case "blockRef": {
+        const refContent = getBlockRefContent(seg.value);
+        // If we have parsed segments, render them with proper styling
+        if (refContent.segments && refContent.segments.length > 0) {
+          return (
+            <div key={index} className={`modern-block-ref-container modern-block-ref-container-${theme}`}>
+              {renderSegments(refContent.segments, theme)}
+            </div>
+          );
+        }
+        // Fallback to plain text
         return (
           <span key={index} className={`modern-block-ref modern-block-ref-${theme}`}>
-            {getBlockRefText(seg.value)}
+            {refContent.text}
           </span>
         );
+      }
       case "link":
         return (
           <span key={index} className={`modern-link modern-link-${theme}`}>
