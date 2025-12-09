@@ -155,8 +155,8 @@ function parseMarkdownText(text) {
     { regex: /(?<!\*)\*([^*]+)\*(?!\*)|(?<!_)_([^_]+)_(?!_)/g, type: "italic", extract: (m) => ({ value: m[1] || m[2] }) },
     // Strikethrough ~~text~~
     { regex: /~~([^~]+)~~/g, type: "strikethrough", extract: (m) => ({ value: m[1] }) },
-    // Highlight ^^text^^
-    { regex: /\^\^([^^]+)\^\^/g, type: "highlight", extract: (m) => ({ value: m[1] }) },
+    // Highlight ^^text^^ - use non-greedy match to handle multiple highlights
+    { regex: /\^\^(.+?)\^\^/g, type: "highlight", extract: (m) => ({ value: m[1] }) },
     // Page references [[page]]
     { regex: /\[\[([^\]]+)\]\]/g, type: "pageRef", extract: (m) => ({ value: m[1] }) },
     // Tags #tag or #[[tag]]
@@ -202,10 +202,21 @@ function parseMarkdownText(text) {
 
   // Build segments
   let pos = 0;
+  let prevMatchType = null;
   for (const match of filteredMatches) {
     // Add text before this match
     if (match.start > pos) {
-      const textBefore = text.slice(pos, match.start);
+      let textBefore = text.slice(pos, match.start);
+      // Normalize whitespace: replace newlines and multiple spaces with single space
+      textBefore = textBefore.replace(/\s+/g, ' ');
+      // Trim leading whitespace if previous element was code/highlight
+      if (prevMatchType === 'code' || prevMatchType === 'highlight') {
+        textBefore = textBefore.trimStart();
+      }
+      // Trim trailing whitespace before code/highlight elements
+      if (match.type === 'code' || match.type === 'highlight') {
+        textBefore = textBefore.trimEnd();
+      }
       if (textBefore) {
         segments.push({ type: "text", value: textBefore });
       }
@@ -220,12 +231,22 @@ function parseMarkdownText(text) {
       ...(match.alt && { alt: match.alt }),
     });
 
+    prevMatchType = match.type;
     pos = match.end;
   }
 
   // Add remaining text
   if (pos < text.length) {
-    segments.push({ type: "text", value: text.slice(pos) });
+    let remainingText = text.slice(pos);
+    // Normalize whitespace
+    remainingText = remainingText.replace(/\s+/g, ' ');
+    // Trim leading whitespace if previous element was code/highlight
+    if (prevMatchType === 'code' || prevMatchType === 'highlight') {
+      remainingText = remainingText.trimStart();
+    }
+    if (remainingText) {
+      segments.push({ type: "text", value: remainingText });
+    }
   }
 
   // If no matches found, return the whole text as one segment
@@ -608,39 +629,19 @@ function renderSegments(segments, theme) {
   return segments.map((seg, index) => {
     switch (seg.type) {
       case "pageRef":
-        return (
-          <span key={index} className={`modern-page-ref modern-page-ref-${theme}`}>
-            {seg.value}
-          </span>
-        );
+        return <span key={index} className={`modern-page-ref modern-page-ref-${theme}`}>{seg.value}</span>;
       case "tag":
-        return (
-          <span key={index} className={`modern-tag modern-tag-${theme}`}>
-            {seg.value}
-          </span>
-        );
+        return <span key={index} className={`modern-tag modern-tag-${theme}`}>{seg.value}</span>;
       case "bold":
         return <strong key={index}>{seg.value}</strong>;
       case "italic":
         return <em key={index}>{seg.value}</em>;
       case "highlight":
-        return (
-          <mark key={index} className={`modern-highlight modern-highlight-${theme}`}>
-            {seg.value}
-          </mark>
-        );
+        return <span key={index} className={`modern-highlight modern-highlight-${theme}`}>{seg.value}</span>;
       case "strikethrough":
-        return (
-          <del key={index} className={`modern-strikethrough modern-strikethrough-${theme}`}>
-            {seg.value}
-          </del>
-        );
+        return <del key={index} className={`modern-strikethrough modern-strikethrough-${theme}`}>{seg.value}</del>;
       case "code":
-        return (
-          <code key={index} className={`modern-code modern-code-${theme}`}>
-            {seg.value}
-          </code>
-        );
+        return <span key={index} className={`modern-code modern-code-${theme}`}>{seg.value}</span>;
       case "codeBlock": {
         const highlightedHtml = highlightCode(seg.value, seg.language);
         return (
@@ -676,11 +677,7 @@ function renderSegments(segments, theme) {
         );
       }
       case "link":
-        return (
-          <span key={index} className={`modern-link modern-link-${theme}`}>
-            {seg.value}
-          </span>
-        );
+        return <span key={index} className={`modern-link modern-link-${theme}`}>{seg.value}</span>;
       case "image":
         return (
           <div key={index} className="modern-image-container">

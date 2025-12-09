@@ -321,20 +321,17 @@
   color: #9da5b4;
 }
 
-/* Highlight styles */
+/* Highlight styles - just use color, no decoration to avoid html2canvas bug */
 .modern-highlight {
-  padding: 1px 4px;
-  border-radius: 3px;
+  font-weight: 600;
 }
 
 .modern-highlight-light {
-  background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
-  color: #713f12;
+  color: #b45309;
 }
 
 .modern-highlight-dark {
-  background: linear-gradient(135deg, #854d0e 0%, #a16207 100%);
-  color: #fef08a;
+  color: #fbbf24;
 }
 
 /* Strikethrough styles */
@@ -353,25 +350,24 @@
   text-decoration-color: #64748b;
 }
 
-/* Code styles */
+/* Code styles - use border instead of background to avoid html2canvas bug */
 .modern-code {
-  display: inline;
   font-family: "SF Mono", "Fira Code", "Consolas", monospace;
   font-size: 0.85em;
-  padding: 2px 6px;
+  padding: 1px 4px;
   border-radius: 4px;
-  white-space: nowrap;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
+  border: 1px solid;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .modern-code-light {
-  background-color: #f1f5f9;
+  border-color: #e2e8f0;
   color: #e11d48;
 }
 
 .modern-code-dark {
-  background-color: #334155;
+  border-color: #475569;
   color: #fb7185;
 }
 
