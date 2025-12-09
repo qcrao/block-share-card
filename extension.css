@@ -550,6 +550,20 @@
   -moz-tab-size: 2;
 }
 
+/* Ensure all tokens have consistent font */
+.modern-code-block code * {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  vertical-align: baseline !important;
+}
+
+.modern-code-block .token {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
 .modern-code-block-light {
   background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
   border: 1px solid #e2e8f0;
