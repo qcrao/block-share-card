@@ -268,9 +268,12 @@ function processBlockFromApi(block, depth = 0) {
     return result;
   }
 
-  // Handle both Clojure-style keys (:block/string) and JS-style keys (string)
-  const text = block[":block/string"] || block["string"] || "";
-  const children = block[":block/children"] || block["children"] || [];
+  // Handle all possible key formats from Roam API:
+  // - ":block/string" (Clojure keyword style)
+  // - "block/string" (Clojure symbol style, from pull queries)  
+  // - "string" (simplified JS style)
+  const text = block[":block/string"] ?? block["block/string"] ?? block["string"] ?? "";
+  const children = block[":block/children"] ?? block["block/children"] ?? block["children"] ?? [];
 
   console.log("[ShareCard] processBlockFromApi depth:", depth, "text:", text.substring(0, 100), "children:", children.length);
 
@@ -324,10 +327,31 @@ function processBlockFromApi(block, depth = 0) {
 
   // Process children regardless of open state (this is the key fix!)
   if (children.length > 0) {
-    // Sort children by order
-    const sortedChildren = [...children].sort((a, b) =>
-      (a[":block/order"] || 0) - (b[":block/order"] || 0)
-    );
+    // Debug: log the first child's keys to understand the data structure
+    if (children[0]) {
+      console.log("[ShareCard] First child keys:", Object.keys(children[0]));
+      console.log("[ShareCard] First child order values:", {
+        ":block/order": children[0][":block/order"],
+        "block/order": children[0]["block/order"],
+        "order": children[0]["order"],
+      });
+    }
+
+    // Sort children by order (support all possible key formats from Roam API)
+    const sortedChildren = [...children].sort((a, b) => {
+      // Roam API pull query may return keys in different formats:
+      // - ":block/order" (Clojure keyword style)
+      // - "block/order" (Clojure symbol style, from pull queries)
+      // - "order" (simplified JS style)
+      const orderA = a[":block/order"] ?? a["block/order"] ?? a["order"] ?? 0;
+      const orderB = b[":block/order"] ?? b["block/order"] ?? b["order"] ?? 0;
+      return orderA - orderB;
+    });
+
+    console.log("[ShareCard] Children order after sorting:", sortedChildren.map(c => ({
+      text: (c[":block/string"] || c["block/string"] || c["string"] || "").substring(0, 30),
+      order: c[":block/order"] ?? c["block/order"] ?? c["order"]
+    })));
 
     for (const child of sortedChildren) {
       result.push(...processBlockFromApi(child, depth + 1));
