@@ -89,7 +89,7 @@ function ClassicHeader({ username, time }) {
 }
 
 /**
- * Classic Card Content - renders blocks as bullet list items
+ * Classic Card Content - renders blocks as bullet list items with proper indentation
  */
 function ClassicContent({ segments }) {
   if (!segments || segments.length === 0) {
@@ -98,16 +98,22 @@ function ClassicContent({ segments }) {
 
   return (
     <div className="classic-card-content">
-      {segments.map((block, blockIndex) => (
-        <div key={blockIndex} className="classic-block">
-          <div className="classic-bullet">
-            <span className="classic-bullet-dot" />
+      {segments.map((block, blockIndex) => {
+        // Use depth from block data for proper indentation (Roam's outline hierarchy)
+        const depth = block.depth || 0;
+        const indentStyle = depth > 0 ? { marginLeft: `${depth * 20}px` } : {};
+
+        return (
+          <div key={blockIndex} className="classic-block" style={indentStyle}>
+            <div className="classic-bullet">
+              <span className="classic-bullet-dot" />
+            </div>
+            <div className="classic-block-text">
+              {renderSegments(block.content)}
+            </div>
           </div>
-          <div className="classic-block-text">
-            {renderSegments(block.content)}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
