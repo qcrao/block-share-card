@@ -201,8 +201,7 @@ function parseMarkdownText(text) {
     { regex: /\[([^\]]+)\]\(([^)]+)\)/g, type: "link", extract: (m) => ({ value: m[1], href: m[2] }) },
     // Images ![alt](url)
     { regex: /!\[([^\]]*)\]\(([^)]+)\)/g, type: "image", extract: (m) => ({ value: m[2], alt: m[1] }) },
-    // Blockquote > text (at line start)
-    { regex: /^>\s*(.+)$/gm, type: "blockquote", extract: (m) => ({ value: m[1] }) },
+    // Note: Blockquote (>) is handled at block level in processBlockFromApi, not here
   ];
 
   // Find all matches with their positions
@@ -313,7 +312,9 @@ function processBlockFromApi(block, depth = 0) {
 
   // Check if this is a code block (starts with ```)
   const isCodeBlock = typeof text === "string" && text.startsWith("```");
-  console.log("[ShareCard] isCodeBlock:", isCodeBlock);
+  // Check if this is a blockquote (starts with >)
+  const isBlockquote = typeof text === "string" && text.trimStart().startsWith(">");
+  console.log("[ShareCard] isCodeBlock:", isCodeBlock, "isBlockquote:", isBlockquote);
 
   if (text && typeof text === "string") {
     if (isCodeBlock) {
@@ -349,6 +350,20 @@ function processBlockFromApi(block, depth = 0) {
         type: depth === 0 ? "main" : "child",
         depth,
         content: [{ type: "codeBlock", value: code, language }]
+      });
+    } else if (isBlockquote) {
+      // Parse blockquote - remove leading > and parse the rest
+      const quoteContent = text.trimStart().replace(/^>\s*/, "");
+      console.log("[ShareCard] Blockquote detected, content:", quoteContent.substring(0, 100));
+
+      // For blockquote, parse each line separately to preserve line breaks
+      const lines = quoteContent.split('\n');
+      const parsedLines = lines.map(line => parseMarkdownText(line));
+
+      result.push({
+        type: depth === 0 ? "main" : "child",
+        depth,
+        content: [{ type: "blockquote", value: quoteContent, lines: parsedLines }]
       });
     } else {
       result.push({
@@ -760,12 +775,39 @@ function renderSegments(segments, theme) {
           </pre>
         );
       }
-      case "blockquote":
+      case "blockquote": {
+        // Handle line breaks within blockquote
+        const renderBlockquoteContent = () => {
+          // If we have parsed lines (each line parsed separately), render them with <br />
+          if (seg.lines && seg.lines.length > 0) {
+            return seg.lines.map((lineSegments, i) => (
+              <span key={i}>
+                {lineSegments.length > 0 ? renderSegments(lineSegments, theme) : null}
+                {i < seg.lines.length - 1 && <br />}
+              </span>
+            ));
+          }
+          // Legacy: if we have segments (old format)
+          if (seg.segments && seg.segments.length > 0) {
+            return renderSegments(seg.segments, theme);
+          }
+          // Fallback: split by newlines and render with <br />
+          if (seg.value && seg.value.includes('\n')) {
+            return seg.value.split('\n').map((line, i, arr) => (
+              <span key={i}>
+                {line}
+                {i < arr.length - 1 && <br />}
+              </span>
+            ));
+          }
+          return seg.value;
+        };
         return (
           <blockquote key={index} className={`modern-blockquote modern-blockquote-${theme}`}>
-            {seg.value}
+            {renderBlockquoteContent()}
           </blockquote>
         );
+      }
       case "blockRef": {
         const refContent = getBlockRefContent(seg.value);
         // If we have parsed segments, render them with proper styling
