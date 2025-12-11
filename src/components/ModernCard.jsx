@@ -149,6 +149,36 @@ function parseMarkdownText(text) {
     { regex: /\{\{\[\[DONE\]\]\}\}/g, type: "done", extract: () => ({ value: "" }) },
     // TODO checkbox {{[[TODO]]}}
     { regex: /\{\{\[\[TODO\]\]\}\}/g, type: "todo", extract: () => ({ value: "" }) },
+    // POMO (Pomodoro) timer {{[[POMO]]}}
+    { regex: /\{\{\[\[POMO\]\]\}\}/g, type: "pomo", extract: () => ({ value: "" }) },
+    // Query {{[[query]]: ...}} or {{query: ...}}
+    { regex: /\{\{(?:\[\[query\]\]|query):\s*[^}]*\}\}/gi, type: "query", extract: () => ({ value: "Query" }) },
+    // Table {{[[table]]}}
+    { regex: /\{\{\[\[table\]\]\}\}/gi, type: "table", extract: () => ({ value: "Table" }) },
+    // Kanban {{[[kanban]]}}
+    { regex: /\{\{\[\[kanban\]\]\}\}/gi, type: "kanban", extract: () => ({ value: "Kanban" }) },
+    // Calculator {{[[calculator]]}}
+    { regex: /\{\{\[\[calculator\]\]\}\}/gi, type: "calculator", extract: () => ({ value: "Calculator" }) },
+    // Diagram/Mermaid {{[[mermaid]]}} or {{mermaid}}
+    { regex: /\{\{(?:\[\[mermaid\]\]|mermaid)[^}]*\}\}/gi, type: "diagram", extract: () => ({ value: "Diagram" }) },
+    // Slider {{[[slider]]}}
+    { regex: /\{\{\[\[slider\]\]\}\}/gi, type: "slider", extract: () => ({ value: "" }) },
+    // YouTube embed {{[[youtube]]: url}} or {{youtube: url}}
+    { regex: /\{\{(?:\[\[youtube\]\]|youtube):\s*([^}]+)\}\}/gi, type: "youtube", extract: (m) => ({ value: m[1].trim() }) },
+    // Video embed {{[[video]]: url}} or {{video: url}}
+    { regex: /\{\{(?:\[\[video\]\]|video):\s*([^}]+)\}\}/gi, type: "video", extract: (m) => ({ value: m[1].trim() }) },
+    // PDF embed {{[[pdf]]: url}} or {{pdf: url}}
+    { regex: /\{\{(?:\[\[pdf\]\]|pdf):\s*([^}]+)\}\}/gi, type: "pdf", extract: (m) => ({ value: m[1].trim() }) },
+    // Embed block {{[[embed]]: ((uid))}} or {{embed: ((uid))}}
+    { regex: /\{\{(?:\[\[embed\]\]|embed):\s*\(\(([a-zA-Z0-9_-]{9})\)\)\s*\}\}/gi, type: "embed", extract: (m) => ({ value: m[1] }) },
+    // Word count {{word-count}} or {{[[word-count]]}}
+    { regex: /\{\{(?:\[\[word-count\]\]|word-count)\}\}/gi, type: "wordcount", extract: () => ({ value: "" }) },
+    // Date picker / Calendar {{[[date picker]]}} or {{[[calendar]]}}
+    { regex: /\{\{\[\[(?:date picker|calendar)\]\]\}\}/gi, type: "datepicker", extract: () => ({ value: "" }) },
+    // Current time {{[[current time]]}}
+    { regex: /\{\{\[\[current time\]\]\}\}/gi, type: "currenttime", extract: () => ({ value: new Date().toLocaleTimeString() }) },
+    // Attribute:: value (must be before other patterns)
+    { regex: /^([A-Za-z][A-Za-z0-9\s-]*)::(?:\s*)(.*)$/gm, type: "attribute", extract: (m) => ({ key: m[1].trim(), value: m[2].trim() }) },
     // Code blocks (triple backticks) - must be first
     { regex: /```(\w*)\n?([\s\S]*?)```/g, type: "codeBlock", extract: (m) => ({ value: m[2], language: m[1] || "" }) },
     // Inline code
@@ -660,6 +690,51 @@ function renderSegments(segments, theme) {
         return <span key={index} className={`modern-done modern-done-${theme}`}>✓</span>;
       case "todo":
         return <span key={index} className={`modern-todo modern-todo-${theme}`} />;
+      case "pomo":
+        return <span key={index} className={`modern-pomo modern-pomo-${theme}`}>🍅</span>;
+      case "query":
+        return <span key={index} className={`modern-component modern-component-${theme}`}>📋 Query</span>;
+      case "table":
+        return <span key={index} className={`modern-component modern-component-${theme}`}>📊 Table</span>;
+      case "kanban":
+        return <span key={index} className={`modern-component modern-component-${theme}`}>📌 Kanban</span>;
+      case "calculator":
+        return <span key={index} className={`modern-component modern-component-${theme}`}>🔢 Calculator</span>;
+      case "diagram":
+        return <span key={index} className={`modern-component modern-component-${theme}`}>📈 Diagram</span>;
+      case "slider":
+        return <span key={index} className={`modern-slider modern-slider-${theme}`} />;
+      case "youtube":
+        return <span key={index} className={`modern-embed modern-embed-${theme}`}>▶️ YouTube</span>;
+      case "video":
+        return <span key={index} className={`modern-embed modern-embed-${theme}`}>🎬 Video</span>;
+      case "pdf":
+        return <span key={index} className={`modern-embed modern-embed-${theme}`}>📄 PDF</span>;
+      case "embed": {
+        const embedContent = getBlockRefContent(seg.value);
+        if (embedContent.segments && embedContent.segments.length > 0) {
+          return (
+            <div key={index} className={`modern-embed-block modern-embed-block-${theme}`}>
+              {renderSegments(embedContent.segments, theme)}
+            </div>
+          );
+        }
+        return <span key={index} className={`modern-embed modern-embed-${theme}`}>📎 Embed</span>;
+      }
+      case "wordcount":
+        return <span key={index} className={`modern-component modern-component-${theme}`}>📝 Word Count</span>;
+      case "datepicker":
+        return <span key={index} className={`modern-component modern-component-${theme}`}>📅 Date</span>;
+      case "currenttime":
+        return <span key={index} className={`modern-time-display modern-time-display-${theme}`}>{seg.value}</span>;
+      case "attribute":
+        return (
+          <span key={index} className={`modern-attribute modern-attribute-${theme}`}>
+            <span className="modern-attribute-key">{seg.key}</span>
+            <span className="modern-attribute-separator">::</span>
+            <span className="modern-attribute-value">{seg.value}</span>
+          </span>
+        );
       case "pageRef":
         return <span key={index} className={`modern-page-ref modern-page-ref-${theme}`}>{seg.value}</span>;
       case "tag":
