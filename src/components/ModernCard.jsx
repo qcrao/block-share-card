@@ -145,6 +145,8 @@ function parseMarkdownText(text) {
 
   // Regex patterns for different Markdown elements
   const patterns = [
+    // TODO checkbox {{[[TODO]]}}
+    { regex: /\{\{\[\[TODO\]\]\}\}/g, type: "todo", extract: () => ({ value: "" }) },
     // Code blocks (triple backticks) - must be first
     { regex: /```(\w*)\n?([\s\S]*?)```/g, type: "codeBlock", extract: (m) => ({ value: m[2], language: m[1] || "" }) },
     // Inline code
@@ -652,6 +654,8 @@ function getBlockRefContent(uid) {
 function renderSegments(segments, theme) {
   return segments.map((seg, index) => {
     switch (seg.type) {
+      case "todo":
+        return <span key={index} className={`modern-todo modern-todo-${theme}`} />;
       case "pageRef":
         return <span key={index} className={`modern-page-ref modern-page-ref-${theme}`}>{seg.value}</span>;
       case "tag":
