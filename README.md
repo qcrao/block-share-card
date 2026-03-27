@@ -13,7 +13,7 @@ The Block Share Card extension for Roam Research enables users to share content 
 - **Three Card Styles:** Choose from Classic, Modern Light, and Modern Dark themes.
 - **Multiple Block Selection:** Share a single block or select multiple blocks at once.
 - **Flexible Triggering:** Use the toolbar button or the Command Palette to generate card images.
-- **No Zoom Required:** Works with zoomed-in blocks, focused blocks, and shift-click selected blocks.
+- **No Zoom Required:** Works with zoomed-in blocks, focused blocks, and selected blocks.
 
 ## Installation
 
