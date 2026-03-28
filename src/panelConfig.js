@@ -27,6 +27,21 @@ export function initPanelConfig(extensionAPI) {
         },
       },
       {
+        id: "show-toolbar-icon",
+        name: "Show toolbar icon",
+        description: "Show the share card icon in the toolbar",
+        action: {
+          type: "switch",
+          onChange: async (evt) => {
+            const checked = typeof evt === "boolean" ? evt : evt?.target?.checked;
+            await extensionAPI.settings.set("show-toolbar-icon", checked);
+            if (window._blockShareCardToggleIcon) {
+              window._blockShareCardToggleIcon(checked);
+            }
+          },
+        },
+      },
+      {
         id: "disable-blocks-info-setting",
         name: "Hide blocks and days",
         description: "Hide the number of blocks and days",
